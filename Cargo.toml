@@ -3,5 +3,10 @@ name = "hyper_parsers"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "fast_query_parser"
+crate-type = ["cdylib"]
+
 [dependencies]
+pyo3 = { version = "0.17.3", features = ["extension-module"] }
 urlencoding = "2.1.2"

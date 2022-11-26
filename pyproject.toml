@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "hyper-parsers"
+version = "0.1.0"
+description = ""
+authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "hyper_parsers"}]
+
+[project]
+name = "fast_query_parser"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+maturin = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pyperf = "*"
+
+[build-system]
+requires = ["maturin>=0.13,<0.14"]
+build-backend = "maturin"
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.pycln]
+all = true

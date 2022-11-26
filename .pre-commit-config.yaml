@@ -10,6 +10,25 @@ repos:
     rev: "v3.0.0-alpha.4"
     hooks:
       - id: prettier
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.2.2
+    hooks:
+      - id: pyupgrade
+        args: ["--py38-plus"]
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.1.2
+    hooks:
+      - id: pycln
+        args: [--config=pyproject.toml]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black
+        args: [--config=./pyproject.toml]
   - repo: https://github.com/doublify/pre-commit-rust
     rev: v1.0
     hooks:
