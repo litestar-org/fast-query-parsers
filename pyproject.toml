@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "hyper-parsers"
+name = "fast_query_parser"
 version = "0.1.0"
 description = ""
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
