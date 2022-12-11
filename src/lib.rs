@@ -1,9 +1,7 @@
 use pyo3::prelude::*;
 
-fn _parse_qsl(qs: &[u8], separator: char) -> Vec<(String, String)> {
-    String::from_utf8(qs.to_vec())
-        .unwrap()
-        .split(separator)
+fn _parse_qsl(qs: &str, separator: char) -> Vec<(&str, &str)> {
+    qs.split(separator)
         .filter(|value| !value.is_empty())
         .map(|value| {
             if value.contains('=') {
@@ -12,12 +10,11 @@ fn _parse_qsl(qs: &[u8], separator: char) -> Vec<(String, String)> {
                 (value, "")
             }
         })
-        .map(|value| (value.0.to_string(), value.1.to_string().replace('+', " ")))
-        .collect::<Vec<(String, String)>>()
+        .collect::<Vec<(&str, &str)>>()
 }
 
 #[pyfunction]
-fn parse_qsl(qs: &[u8], separator: char) -> PyResult<Vec<(String, String)>> {
+fn parse_qsl(qs: &str, separator: char) -> PyResult<Vec<(&str, &str)>> {
     Ok(_parse_qsl(qs, separator))
 }
 
@@ -33,28 +30,28 @@ mod tests {
 
     #[test]
     fn test_ampersand_separator() {
-        let result = _parse_qsl("key=1&key=2&anotherKey=a&yetAnother=z".as_bytes(), '&');
+        let result = _parse_qsl("key=1&key=2&anotherKey=a&yetAnother=z", '&');
         assert_eq!(
             result,
             vec![
-                ("key".to_string(), "1".to_string()),
-                ("key".to_string(), "2".to_string()),
-                ("anotherKey".to_string(), "a".to_string()),
-                ("yetAnother".to_string(), "z".to_string())
+                ("key", "1"),
+                ("key", "2"),
+                ("anotherKey", "a"),
+                ("yetAnother", "z")
             ]
         );
     }
 
     #[test]
     fn test_semicolon_separator() {
-        let result = _parse_qsl("key=1;key=2;anotherKey=a;yetAnother=z".as_bytes(), ';');
+        let result = _parse_qsl("key=1;key=2;anotherKey=a;yetAnother=z", ';');
         assert_eq!(
             result,
             vec![
-                ("key".to_string(), "1".to_string()),
-                ("key".to_string(), "2".to_string()),
-                ("anotherKey".to_string(), "a".to_string()),
-                ("yetAnother".to_string(), "z".to_string())
+                ("key", "1"),
+                ("key", "2"),
+                ("anotherKey", "a"),
+                ("yetAnother", "z")
             ]
         );
     }

@@ -10,9 +10,7 @@ def main():
         "benchmark stdlib query parser",
         lambda: stdlib_parse_qsl("key=1&key=2&key=3&another=a&zorg=5=", keep_blank_values=True),
     )
-    runner.bench_func(
-        "benchmark fast query parser", lambda: fast_parse_qsl(b"key=1&key=2&key=3&another=a&zorg=5=", "&")
-    )
+    runner.bench_func("benchmark fast query parser", lambda: fast_parse_qsl("key=1&key=2&key=3&another=a&zorg=5=", "&"))
 
 
 if __name__ == "__main__":

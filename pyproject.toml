@@ -5,7 +5,7 @@ description = ""
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "hyper_parsers"}]
+packages = [{include = "src"}]
 
 [project]
 name = "fast_query_parser"
