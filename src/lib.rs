@@ -1,8 +1,7 @@
 use pyo3::prelude::*;
-use urlencoding::decode_binary;
 
-fn _parse_qsl(qs: &[u8], separator: char) -> Box<[(String, String)]> {
-    String::from_utf8(decode_binary(qs).into_owned())
+fn _parse_qsl(qs: &[u8], separator: char) -> Vec<(String, String)> {
+    String::from_utf8(qs.to_vec())
         .unwrap()
         .split(separator)
         .filter(|value| !value.is_empty())
@@ -15,12 +14,11 @@ fn _parse_qsl(qs: &[u8], separator: char) -> Box<[(String, String)]> {
         })
         .map(|value| (value.0.to_string(), value.1.to_string().replace('+', " ")))
         .collect::<Vec<(String, String)>>()
-        .into_boxed_slice()
 }
 
 #[pyfunction]
 fn parse_qsl(qs: &[u8], separator: char) -> PyResult<Vec<(String, String)>> {
-    Ok(_parse_qsl(qs, separator).to_vec())
+    Ok(_parse_qsl(qs, separator))
 }
 
 #[pymodule]
@@ -44,7 +42,6 @@ mod tests {
                 ("anotherKey".to_string(), "a".to_string()),
                 ("yetAnother".to_string(), "z".to_string())
             ]
-            .into_boxed_slice()
         );
     }
 
@@ -59,7 +56,6 @@ mod tests {
                 ("anotherKey".to_string(), "a".to_string()),
                 ("yetAnother".to_string(), "z".to_string())
             ]
-            .into_boxed_slice()
         );
     }
 }
