@@ -34,7 +34,7 @@ from fast_query_parser import parse_qsl as fast_parse_qsl
     ],
 )
 def test_parse_qsl_standard_separator(qs: str, expected: list[tuple[str, str]]) -> None:
-    result = fast_parse_qsl(qs.encode(), "&")
+    result = fast_parse_qsl(qs, "&")
     assert result == stdlib_parse_qsl(qs, keep_blank_values=True) == expected
 
 
@@ -54,5 +54,5 @@ def test_parse_qsl_standard_separator(qs: str, expected: list[tuple[str, str]]) 
     ],
 )
 def test_parse_qsl_semicolon_separator(qs: str, expected: list[tuple[str, str]]) -> None:
-    result = fast_parse_qsl(qs.encode(), ";")
+    result = fast_parse_qsl(qs, ";")
     assert result == stdlib_parse_qsl(qs, separator=";", keep_blank_values=True) == expected

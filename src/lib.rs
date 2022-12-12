@@ -1,20 +1,15 @@
 use pyo3::prelude::*;
 
-fn _parse_qsl(qs: &str, separator: char) -> Vec<(&str, &str)> {
+fn _parse_qsl(qs: &str, separator: char) -> Vec<(String, String)> {
     qs.split(separator)
         .filter(|value| !value.is_empty())
-        .map(|value| {
-            if value.contains('=') {
-                value.split_once('=').unwrap()
-            } else {
-                (value, "")
-            }
-        })
-        .collect::<Vec<(&str, &str)>>()
+        .map(|value| value.split_once('=').unwrap_or((value, "")))
+        .map(|value| (value.0.to_owned(), value.1.replace('+', " ")))
+        .collect::<Vec<(String, String)>>()
 }
 
 #[pyfunction]
-fn parse_qsl(qs: &str, separator: char) -> PyResult<Vec<(&str, &str)>> {
+fn parse_qsl(qs: &str, separator: char) -> PyResult<Vec<(String, String)>> {
     Ok(_parse_qsl(qs, separator))
 }
 
@@ -34,10 +29,10 @@ mod tests {
         assert_eq!(
             result,
             vec![
-                ("key", "1"),
-                ("key", "2"),
-                ("anotherKey", "a"),
-                ("yetAnother", "z")
+                (String::from("key"), String::from("1")),
+                (String::from("key"), String::from("2")),
+                (String::from("anotherKey"), String::from("a")),
+                (String::from("yetAnother"), String::from("z")),
             ]
         );
     }
@@ -48,10 +43,10 @@ mod tests {
         assert_eq!(
             result,
             vec![
-                ("key", "1"),
-                ("key", "2"),
-                ("anotherKey", "a"),
-                ("yetAnother", "z")
+                (String::from("key"), String::from("1")),
+                (String::from("key"), String::from("2")),
+                (String::from("anotherKey"), String::from("a")),
+                (String::from("yetAnother"), String::from("z")),
             ]
         );
     }
