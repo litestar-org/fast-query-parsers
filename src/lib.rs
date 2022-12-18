@@ -4,10 +4,11 @@ use urlencoding::decode;
 fn _parse_qsl(qs: &str, separator: char) -> Vec<(String, String)> {
     decode(qs)
         .unwrap_or_default()
+        .replace('+', " ")
         .split(separator)
         .filter(|value| !value.is_empty())
         .map(|value| value.split_once('=').unwrap_or((value, "")))
-        .map(|value| (value.0.to_owned(), value.1.replace('+', " ")))
+        .map(|value| (value.0.to_owned(), value.1.to_owned()))
         .collect::<Vec<(String, String)>>()
 }
 
