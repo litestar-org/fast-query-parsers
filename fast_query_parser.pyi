@@ -1,0 +1,3 @@
+from typing import List, Tuple
+
+def parse_qsl(qs: str, separator: str) -> List[Tuple[str, str]]: ...

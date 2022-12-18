@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-fn _parse_qsl(qs: &str, separator: char) -> Vec<(String, String)> {
+fn _parse_qsl(qs: String, separator: char) -> Vec<(String, String)> {
     qs.split(separator)
         .filter(|value| !value.is_empty())
         .map(|value| value.split_once('=').unwrap_or((value, "")))
@@ -9,7 +9,7 @@ fn _parse_qsl(qs: &str, separator: char) -> Vec<(String, String)> {
 }
 
 #[pyfunction]
-fn parse_qsl(qs: &str, separator: char) -> PyResult<Vec<(String, String)>> {
+fn parse_qsl(qs: String, separator: char) -> PyResult<Vec<(String, String)>> {
     Ok(_parse_qsl(qs, separator))
 }
 
@@ -25,7 +25,7 @@ mod tests {
 
     #[test]
     fn test_ampersand_separator() {
-        let result = _parse_qsl("key=1&key=2&anotherKey=a&yetAnother=z", '&');
+        let result = _parse_qsl(String::from("key=1&key=2&anotherKey=a&yetAnother=z"), '&');
         assert_eq!(
             result,
             vec![
@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn test_semicolon_separator() {
-        let result = _parse_qsl("key=1;key=2;anotherKey=a;yetAnother=z", ';');
+        let result = _parse_qsl(String::from("key=1;key=2;anotherKey=a;yetAnother=z"), ';');
         assert_eq!(
             result,
             vec![
