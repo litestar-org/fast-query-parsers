@@ -1,57 +1,29 @@
-use pyo3::prelude::*;
-use urlencoding::decode;
+mod query_string;
 
-fn _parse_qsl(qs: &str, separator: char) -> Vec<(String, String)> {
-    decode(qs)
-        .unwrap_or_default()
-        .replace('+', " ")
-        .split(separator)
-        .filter(|value| !value.is_empty())
-        .map(|value| value.split_once('=').unwrap_or((value, "")))
-        .map(|value| (value.0.to_owned(), value.1.to_owned()))
-        .collect::<Vec<(String, String)>>()
+use pyo3::prelude::*;
+use pythonize::pythonize;
+
+pub use query_string::{parse_query_string, parse_query_string_to_json};
+
+#[pyfunction]
+#[pyo3(text_signature = "(qs, separator, /)")]
+fn parse_qsl(qs: &[u8], separator: char) -> PyResult<Vec<(String, String)>> {
+    Ok(parse_query_string(qs, separator))
 }
 
 #[pyfunction]
-fn parse_qsl(qs: &str, separator: char) -> PyResult<Vec<(String, String)>> {
-    Ok(_parse_qsl(qs, separator))
+#[pyo3(text_signature = "(qs, /)")]
+fn parse_qs(qs: &[u8]) -> PyResult<PyObject> {
+    let gil = Python::acquire_gil();
+    let py = gil.python();
+
+    Ok(pythonize(py, &parse_query_string_to_json(qs)).unwrap())
 }
 
 #[pymodule]
 fn fast_query_parser(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_qsl, m)?)?;
+    m.add_function(wrap_pyfunction!(parse_qs, m)?)?;
+
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_ampersand_separator() {
-        let result = _parse_qsl("key=1&key=2&anotherKey=a&yetAnother=z", '&');
-        assert_eq!(
-            result,
-            vec![
-                (String::from("key"), String::from("1")),
-                (String::from("key"), String::from("2")),
-                (String::from("anotherKey"), String::from("a")),
-                (String::from("yetAnother"), String::from("z")),
-            ]
-        );
-    }
-
-    #[test]
-    fn test_semicolon_separator() {
-        let result = _parse_qsl("key=1;key=2;anotherKey=a;yetAnother=z", ';');
-        assert_eq!(
-            result,
-            vec![
-                (String::from("key"), String::from("1")),
-                (String::from("key"), String::from("2")),
-                (String::from("anotherKey"), String::from("a")),
-                (String::from("yetAnother"), String::from("z")),
-            ]
-        );
-    }
 }
