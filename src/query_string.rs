@@ -1,20 +1,22 @@
-use percent_encoding::percent_decode;
 use serde_json::{Map, Value};
 use std::convert::Infallible;
+use urlencoding::decode;
 
 type ValuesMap = Map<String, Value>;
 
-fn decode_url_encoded(url_encoded: &[u8]) -> String {
-    percent_decode(url_encoded).decode_utf8_lossy().to_string()
-}
-
 pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
-    decode_url_encoded(qs)
+    String::from_utf8(qs.to_vec())
+        .unwrap()
         .replace('+', " ")
         .split(separator)
         .filter(|value| !value.is_empty())
         .map(|value| value.split_once('=').unwrap_or((value, "")))
-        .map(|value| (value.0.to_owned(), value.1.to_owned()))
+        .map(|value| {
+            (
+                decode(value.0).unwrap().to_string(),
+                decode(value.1).unwrap().to_string(),
+            )
+        })
         .collect::<Vec<(String, String)>>()
 }
 
@@ -110,21 +112,21 @@ mod tests {
             ]
         );
         assert_eq!(
-            parse_query_string(b"first=&@A.ac&second=aaa", '&'),
+            parse_query_string(b"first=%26%40A.ac&second=aaa", '&'),
             vec![
                 (String::from("first"), String::from("&@A.ac")),
                 (String::from("second"), String::from("aaa")),
             ]
         );
         assert_eq!(
-            parse_query_string(b"first=a@A.ac&second=aaa", '&'),
+            parse_query_string(b"first=a%40A.ac&second=aaa", '&'),
             vec![
                 (String::from("first"), String::from("a@A.ac")),
                 (String::from("second"), String::from("aaa")),
             ]
         );
         assert_eq!(
-            parse_query_string(b"first=a@A&.ac&second=aaa", '&'),
+            parse_query_string(b"first=a%40A%26.ac&second=aaa", '&'),
             vec![
                 (String::from("first"), String::from("a@A&.ac")),
                 (String::from("second"), String::from("aaa")),
