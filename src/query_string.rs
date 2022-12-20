@@ -43,16 +43,27 @@ fn decode_value(json_str: String) -> Value {
         return Value::from(vector_values);
     }
 
-    let n = json_str.parse::<i64>();
-    let f = json_str.parse::<f64>();
-    let b = json_str.parse::<bool>();
-    let null = Ok::<_, Infallible>(json_str == "null");
+    let json_integer = json_str.parse::<i64>();
+    let json_float = json_str.parse::<f64>();
+    let json_boolean = json_str.parse::<bool>();
+    let json_null = Ok::<_, Infallible>(json_str == "null");
+    let python_true = Ok::<_, Infallible>(json_str == "True");
+    let python_false = Ok::<_, Infallible>(json_str == "False");
 
-    match (n, f, b, null) {
-        (Ok(n), _, _, _) => Value::from(n),
-        (_, Ok(f), _, _) => Value::from(f),
-        (_, _, Ok(b), _) => Value::from(b),
-        (_, _, _, Ok(true)) => Value::Null,
+    match (
+        json_integer,
+        json_float,
+        json_boolean,
+        json_null,
+        python_true,
+        python_false,
+    ) {
+        (Ok(json_integer), _, _, _, _, _) => Value::from(json_integer),
+        (_, Ok(json_float), _, _, _, _) => Value::from(json_float),
+        (_, _, Ok(json_boolean), _, _, _) => Value::from(json_boolean),
+        (_, _, _, Ok(true), _, _) => Value::Null,
+        (_, _, _, _, Ok(true), _) => Value::from(true),
+        (_, _, _, _, _, Ok(true)) => Value::from(false),
         _ => Value::from(json_str.replace('"', "")),
     }
 }
