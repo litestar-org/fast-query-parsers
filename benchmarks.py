@@ -20,8 +20,7 @@ url_encoded_query = urlencode(
 ).encode()
 
 
-def bench_qsl():
-    runner = pyperf.Runner()
+def bench_qsl(runner: pyperf.Runner):
     runner.bench_func(
         "stdlib non-urlencoded-qs parsing bytes intro tuple of strings",
         lambda: stdlib_parse_qsl(b"key=1&key=2&key=3&another=a&zorg=5=".decode(), keep_blank_values=True),
@@ -44,8 +43,7 @@ def bench_qsl():
     runner.bench_func("parse_url_encoded urlencoded bytes parsing", lambda: fast_parse_qsl(url_encoded_query, "&"))
 
 
-def bench_qs():
-    runner = pyperf.Runner()
+def bench_qs(runner: pyperf.Runner):
     runner.bench_func(
         "stdlib parse_qs parsing into dict",
         lambda: stdlib_parse_qs(url_encoded_query.decode()),
@@ -54,5 +52,7 @@ def bench_qs():
 
 
 if __name__ == "__main__":
-    bench_qsl()
-    bench_qs()
+    runner = pyperf.Runner()
+
+    bench_qsl(runner)
+    bench_qs(runner)
