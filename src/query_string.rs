@@ -1,4 +1,5 @@
 use serde_json::{Map, Value};
+use std::collections::HashMap;
 use std::convert::Infallible;
 use urlencoding::decode;
 
@@ -58,9 +59,18 @@ fn decode_value(json_str: String) -> Value {
 
 pub fn parse_query_string_to_json(bs: &[u8]) -> Value {
     let mut values_map = ValuesMap::new();
+    let mut array_map: HashMap<String, Vec<String>> = HashMap::new();
 
     for (key, value) in parse_query_string(bs, '&') {
-        values_map.insert(key, decode_value(value));
+        array_map.entry(key).or_default().push(value)
+    }
+
+    for (key, value) in array_map.into_iter() {
+        if value.len() == 1 {
+            values_map.insert(key, decode_value(value[0].to_owned()));
+        } else {
+            values_map.insert(key, decode_value(format!("[{}]", value.join(","))));
+        }
     }
 
     values_map.into()
@@ -198,5 +208,13 @@ mod tests {
     #[test]
     fn it_parses_empty_string() {
         assert_eq!(parse_query_string_to_json(b"a="), json!({ "a": "" }));
+    }
+
+    #[test]
+    fn it_parses_a_list_of_values() {
+        assert_eq!(
+            parse_query_string_to_json(b"a=1&a=2&a=3"),
+            json!({ "a": [1,2,3] })
+        );
     }
 }
