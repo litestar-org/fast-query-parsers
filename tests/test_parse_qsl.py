@@ -71,3 +71,7 @@ def test_parse_qsl_semicolon_separator(qs: str, expected: list[tuple[str, str]])
 def test_query_parsing_of_escaped_values(values: tuple[tuple[str, str], tuple[str, str]]) -> None:
     url_encoded = urlencode(values)
     assert fast_parse_qsl(url_encoded.encode(), "&") == list(values)
+
+
+def test_parses_non_ascii_text() -> None:
+    assert fast_parse_qsl("arabic_text=اختبار اللغة العربية".encode(), "&") == [("arabic_text", "اختبار اللغة العربية")]

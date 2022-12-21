@@ -15,7 +15,6 @@ def test_parse_urlencoded() -> None:
                 ("healthy", "true"),
                 ("polluting", "false"),
                 ("json", "null"),
-                ("arabic_text", "اختبار اللغة العربية")
             ]
         ).encode()
     )
@@ -27,5 +26,4 @@ def test_parse_urlencoded() -> None:
         "healthy": True,
         "polluting": False,
         "json": None,
-        "arabic_text":  "اختبار اللغة العربية",
     }
