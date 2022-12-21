@@ -6,6 +6,7 @@ on:
       - main
 jobs:
   validate:
+    name: "Validate"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -25,6 +26,7 @@ jobs:
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always --all-files
   pyton_tests:
+    name: "Python Tests"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -58,6 +60,7 @@ jobs:
       - name: Test
         run: poetry run pytest
   rust_tests:
+    name: "Rust Tests"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -83,6 +86,7 @@ jobs:
           name: coverage-lcov
           path: coverage.lcov
   sonar:
+    name: "Sonar"
     needs:
       - pyton_tests
       - rust_tests
