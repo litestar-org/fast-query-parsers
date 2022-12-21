@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from urllib.parse import parse_qsl as stdlib_parse_qsl
 from urllib.parse import urlencode
 
@@ -34,7 +35,7 @@ from starlite_http_utils import parse_qsl as fast_parse_qsl
         ("a=a+b;b=b+c", [("a", "a b;b=b c")]),
     ],
 )
-def test_parse_qsl_standard_separator(qs: str, expected: list[tuple[str, str]]) -> None:
+def test_parse_qsl_standard_separator(qs: str, expected: List[Tuple[str, str]]) -> None:
     result = fast_parse_qsl(qs.encode(), "&")
     assert result == stdlib_parse_qsl(qs, keep_blank_values=True) == expected
 
@@ -54,7 +55,7 @@ def test_parse_qsl_standard_separator(qs: str, expected: list[tuple[str, str]]) 
         ("a=1;a=2", [("a", "1"), ("a", "2")]),
     ],
 )
-def test_parse_qsl_semicolon_separator(qs: str, expected: list[tuple[str, str]]) -> None:
+def test_parse_qsl_semicolon_separator(qs: str, expected: List[Tuple[str, str]]) -> None:
     result = fast_parse_qsl(qs.encode(), ";")
     assert result == stdlib_parse_qsl(qs, separator=";", keep_blank_values=True) == expected
 
@@ -68,7 +69,7 @@ def test_parse_qsl_semicolon_separator(qs: str, expected: list[tuple[str, str]])
         (("first", "a@A&.ac"), ("second", "aaa")),
     ),
 )
-def test_query_parsing_of_escaped_values(values: tuple[tuple[str, str], tuple[str, str]]) -> None:
+def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[str, str]]) -> None:
     url_encoded = urlencode(values)
     assert fast_parse_qsl(url_encoded.encode(), "&") == list(values)
 

@@ -10,16 +10,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Install Rust Dependencies
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
       - name: Setup Python 3.11
         uses: actions/setup-python@v4
         with:
@@ -43,16 +33,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Install Rust Dependencies
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
