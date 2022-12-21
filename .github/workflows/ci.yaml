@@ -8,10 +8,22 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Install Rust Dependencies
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
       - name: Install Pre-Commit
         run: python -m pip install pre-commit && pre-commit install
       - name: Load cached Pre-Commit Dependencies
@@ -29,9 +41,9 @@ jobs:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Set up python ${{ matrix.python-version }}
+      - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -41,15 +53,42 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      - name: Load cached venv
+      - name: Load Cached Venv
         id: cached-poetry-dependencies
         uses: actions/cache@v3
         with:
           path: .venv
           key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
+      - name: Install Python Dependencies
         run: poetry install --no-interaction --no-root
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Install Rust Dependencies
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+      - name: Install library
+        run: poetry run maturin develop
       - name: Test
         run: poetry run pytest
+  rust_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Install Rust Dependencies
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
