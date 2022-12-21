@@ -21,19 +21,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "fast_query_parser"
-version = "0.1.0"
-dependencies = [
- "percent-encoding",
- "pyo3",
- "pythonize",
- "rustc-hash",
- "serde",
- "serde_json",
- "urlencoding",
-]
-
-[[package]]
 name = "indoc"
 version = "1.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -98,12 +85,6 @@ dependencies = [
  "smallvec",
  "windows-sys",
 ]
-
-[[package]]
-name = "percent-encoding"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "478c572c3d73181ff3c2539045f6eb99e5491218eae919370993b890cdbdd98e"
 
 [[package]]
 name = "proc-macro2"
@@ -242,6 +223,17 @@ name = "smallvec"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
+
+[[package]]
+name = "starlite_http_utils"
+version = "0.1.0"
+dependencies = [
+ "pyo3",
+ "pythonize",
+ "rustc-hash",
+ "serde_json",
+ "urlencoding",
+]
 
 [[package]]
 name = "syn"

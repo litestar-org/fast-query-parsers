@@ -2,8 +2,7 @@ from urllib.parse import parse_qsl as stdlib_parse_qsl
 from urllib.parse import urlencode
 
 import pytest
-
-from fast_query_parser import parse_qsl as fast_parse_qsl
+from starlite_http_utils import parse_qsl as fast_parse_qsl
 
 
 @pytest.mark.parametrize(

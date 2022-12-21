@@ -20,7 +20,7 @@ fn parse_qs(py: Python, qs: &[u8]) -> PyResult<PyObject> {
 }
 
 #[pymodule]
-fn fast_query_parser(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn starlite_http_utils(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_qsl, m)?)?;
     m.add_function(wrap_pyfunction!(parse_qs, m)?)?;
 

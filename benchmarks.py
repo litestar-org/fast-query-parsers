@@ -3,9 +3,8 @@ from urllib.parse import parse_qsl as stdlib_parse_qsl
 from urllib.parse import urlencode
 
 import pyperf
-
-from fast_query_parser import parse_qs as fast_parse_qs
-from fast_query_parser import parse_qsl as fast_parse_qsl
+from starlite_http_utils import parse_qs as fast_parse_qs
+from starlite_http_utils import parse_qsl as fast_parse_qsl
 
 url_encoded_query = urlencode(
     [

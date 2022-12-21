@@ -1,6 +1,6 @@
 from urllib.parse import urlencode
 
-from fast_query_parser import parse_qs
+from starlite_http_utils import parse_qs
 
 
 def test_parse_urlencoded() -> None:

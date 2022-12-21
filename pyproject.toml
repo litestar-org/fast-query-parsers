@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fast_query_parser"
+name = "starlite_http_utils"
 version = "0.1.0"
 description = ""
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "src"}]
 
 [project]
-name = "fast_query_parser"
+name = "starlite_http_utils"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",

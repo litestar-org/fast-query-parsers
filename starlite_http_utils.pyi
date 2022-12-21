@@ -22,3 +22,5 @@ Args:
 Returns:
     A string keyed dictionary of parsed values.
 """
+
+__all__ = ("parse_qsl", "parse_qs")
