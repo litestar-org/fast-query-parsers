@@ -12,11 +12,8 @@ def test_parse_urlencoded() -> None:
                 ("veggies", '["tomato", "potato", "aubergine"]'),
                 ("nested", '{"some_key": "some_value"}'),
                 ("calories", "122.53"),
-                ("healthy", True),
-                ("polluting", False),
-                ("tall", "true"),
-                ("wide", "false"),
-                ("price", None),
+                ("healthy", "true"),
+                ("polluting", "false"),
                 ("json", "null"),
             ]
         ).encode()
@@ -28,8 +25,5 @@ def test_parse_urlencoded() -> None:
         "calories": 122.53,
         "healthy": True,
         "polluting": False,
-        "tall": True,
-        "wide": False,
-        "price": None,
         "json": None,
     }
