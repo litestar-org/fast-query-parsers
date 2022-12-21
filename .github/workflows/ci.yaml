@@ -1,9 +1,9 @@
 name: ci
-#on:
-#  pull_request:
-#  push:
-#    branches:
-#      - main
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -82,24 +82,24 @@ jobs:
         with:
           name: coverage-lcov
           path: coverage.lcov
-    sonar:
-      needs:
-        - pyton_tests
-        - rust_tests
-        - validate
-      if: github.event.pull_request.head.repo.fork == false
-      runs-on: ubuntu-latest
-      steps:
-        - name: Check out repository
-          uses: actions/checkout@v3
-        - name: Download Artifacts
-          uses: actions/download-artifact@v3
-          with:
-            name: coverage-lcov
-        - name: Fix coverage file for sonarcloud
-          run: sed -i "s/home\/runner\/work\/http_utils\/src/github\/workspace/g" coverage.lcov
-        - name: SonarCloud Scan
-          uses: sonarsource/sonarcloud-github-action@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  sonar:
+    needs:
+      - pyton_tests
+      - rust_tests
+      - validate
+    if: github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-lcov
+      - name: Fix coverage file for sonarcloud
+        run: sed -i "s/home\/runner\/work\/http_utils\/src/github\/workspace/g" coverage.lcov
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
