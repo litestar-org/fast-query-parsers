@@ -1,30 +1,28 @@
+use rustc_hash::FxHashMap;
 use serde_json::{Map, Value};
-use std::collections::HashMap;
 use std::convert::Infallible;
 use urlencoding::decode;
 
-type ValuesMap = Map<String, Value>;
-
+#[inline]
 pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
     String::from_utf8(qs.to_vec())
         .unwrap()
         .replace('+', " ")
         .split(separator)
         .filter(|value| !value.is_empty())
-        .map(|value| value.split_once('=').unwrap_or((value, "")))
         .map(|value| {
-            (
-                decode(value.0).unwrap().to_string(),
-                decode(value.1).unwrap().to_string(),
-            )
+            let decoded = decode(value).unwrap();
+            let (x, y) = decoded.split_once('=').unwrap_or((value, ""));
+            (x.to_owned(), y.to_owned())
         })
         .collect::<Vec<(String, String)>>()
 }
 
+#[inline]
 fn decode_value(json_str: String) -> Value {
     if json_str.starts_with('{') && json_str.ends_with('}') {
-        let values_map: ValuesMap = serde_json::from_str(json_str.as_str()).unwrap();
-        let mut result = ValuesMap::new();
+        let values_map: Map<String, Value> = serde_json::from_str(json_str.as_str()).unwrap();
+        let mut result: Map<String, Value> = Map::new();
 
         for (k, v) in values_map {
             result.insert(k, decode_value(v.to_string()));
@@ -47,30 +45,20 @@ fn decode_value(json_str: String) -> Value {
     let json_float = json_str.parse::<f64>();
     let json_boolean = json_str.parse::<bool>();
     let json_null = Ok::<_, Infallible>(json_str == "null");
-    let python_true = Ok::<_, Infallible>(json_str == "True");
-    let python_false = Ok::<_, Infallible>(json_str == "False");
 
-    match (
-        json_integer,
-        json_float,
-        json_boolean,
-        json_null,
-        python_true,
-        python_false,
-    ) {
-        (Ok(json_integer), _, _, _, _, _) => Value::from(json_integer),
-        (_, Ok(json_float), _, _, _, _) => Value::from(json_float),
-        (_, _, Ok(json_boolean), _, _, _) => Value::from(json_boolean),
-        (_, _, _, Ok(true), _, _) => Value::Null,
-        (_, _, _, _, Ok(true), _) => Value::from(true),
-        (_, _, _, _, _, Ok(true)) => Value::from(false),
+    match (json_integer, json_float, json_boolean, json_null) {
+        (Ok(json_integer), _, _, _) => Value::from(json_integer),
+        (_, Ok(json_float), _, _) => Value::from(json_float),
+        (_, _, Ok(json_boolean), _) => Value::from(json_boolean),
+        (_, _, _, Ok(true)) => Value::Null,
         _ => Value::from(json_str.replace('"', "")),
     }
 }
 
+#[inline]
 pub fn parse_query_string_to_json(bs: &[u8]) -> Value {
-    let mut values_map = ValuesMap::new();
-    let mut array_map: HashMap<String, Vec<String>> = HashMap::new();
+    let mut values_map: Map<String, Value> = Map::new();
+    let mut array_map: FxHashMap<String, Vec<String>> = FxHashMap::default();
 
     for (key, value) in parse_query_string(bs, '&') {
         array_map.entry(key).or_default().push(value)
