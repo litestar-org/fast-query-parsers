@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PACKAGE_NAME: starlite_http_utils
+  PACKAGE_NAME: fast-query-parsers
   PYTHON_VERSION: "3.8"
 
 jobs:
