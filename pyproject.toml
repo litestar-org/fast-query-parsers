@@ -11,10 +11,27 @@ packages = [{include = "src"}]
 name = "starlite_http_utils"
 requires-python = ">=3.8"
 classifiers = [
-    "Programming Language :: Rust",
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python",
+    "Programming Language :: Rust",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Typing :: Typed",
 ]
+
+homepage = "https://github.com/starlite-api/http-utils"
+documentation = "https://github.com/starlite-api/http-utils/README.md"
+repository = "https://github.com/starlite-api/http-utils"
 
 [tool.poetry.dependencies]
 python = ">=3.8"
@@ -38,3 +55,7 @@ multi_line_output = 3
 
 [tool.pycln]
 all = true
+
+[tool.maturin]
+sdist-include = ["Cargo.lock"]
+strip = true

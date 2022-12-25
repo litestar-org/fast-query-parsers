@@ -2,7 +2,8 @@
 name = "starlite_http_utils"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 description = "Rust based http utils for the Starlite API Framework"
-license = "MIT"
+readme = "README.md"
+license-file = "LICENSE"
 repository = "https://github.com/starlite-api/http-utils"
 version = "0.1.0"
 edition = "2021"
