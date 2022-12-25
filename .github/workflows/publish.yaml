@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PACKAGE_NAME: fast-query-parsers
+  PACKAGE_NAME: fast_query_parsers
   PYTHON_VERSION: "3.8"
 
 jobs:
