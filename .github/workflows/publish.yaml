@@ -1,10 +1,17 @@
-name: release
+name: Publish
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PACKAGE_NAME: starlite_http_utils
+  PYTHON_VERSION: "3.8"
+
 jobs:
   macos:
     runs-on: macos-latest
@@ -12,29 +19,35 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ env.PYTHON_VERSION }}
           architecture: x64
-      - uses: dtolnay/rust-toolchain@nightly
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
       - name: Build wheels - x86_64
-        uses: PyO3/maturin-action@v1
+        uses: messense/maturin-action@v1
         with:
           target: x86_64
           args: --release --out dist --sdist
       - name: Install built wheel - x86_64
         run: |
-          pip install starlite_http_utils --no-index --find-links dist --force-reinstall
+          pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
           pip install pytest
-          cd tests && pytest
+          pytest -v
       - name: Build wheels - universal2
-        uses: PyO3/maturin-action@v1
+        uses: messense/maturin-action@v1
         with:
           args: --release --universal2 --out dist
       - name: Install built wheel - universal2
         run: |
-          pip install starlite_http_utils --no-index --find-links dist --force-reinstall
-          cd tests && pytest
+          pip install dist/${{ env.PACKAGE_NAME }}-*universal2.whl --force-reinstall
+          pip install pytest
+          pytest -v
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: dist
@@ -48,21 +61,27 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ env.PYTHON_VERSION }}
           architecture: ${{ matrix.target }}
-      - uses: dtolnay/rust-toolchain@nightly
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        uses: messense/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           args: --release --out dist
       - name: Install built wheel
+        shell: bash
         run: |
-          pip install starlite_http_utils --no-index --find-links dist --force-reinstall
+          python -m pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
           pip install pytest
-          cd tests && pytest
+          python -m pytest -v
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: dist
@@ -76,23 +95,22 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ env.PYTHON_VERSION }}
           architecture: x64
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        uses: messense/maturin-action@v1
         with:
-          rust-toolchain: nightly
           target: ${{ matrix.target }}
           manylinux: auto
           args: --release --out dist
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
-          pip install starlite_http_utils --no-index --find-links dist --force-reinstall
+          pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
           pip install pytest
-          cd tests && pytest
+          pytest -v
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: dist
@@ -106,15 +124,14 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        uses: messense/maturin-action@v1
         with:
-          rust-toolchain: nightly
           target: ${{ matrix.target }}
           manylinux: auto
           args: --release --out dist
-      - uses: uraimo/run-on-arch-action@v2.3.0
+      - uses: uraimo/run-on-arch-action@v2.0.5
         if: matrix.target != 'ppc64'
         name: Install built wheel
         with:
@@ -124,12 +141,13 @@ jobs:
           install: |
             apt-get update
             apt-get install -y --no-install-recommends python3 python3-pip
-            pip3 install -U pip pytest
+            pip3 install -U pip
           run: |
-            pip3 install starlite_http_utils --no-index --find-links dist/ --force-reinstall
-            cd tests && pytest
+            pip3 install ${{ env.PACKAGE_NAME }} --no-index --find-links dist/ --force-reinstall
+            pip install pytest
+            pytest -v
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: dist
@@ -145,12 +163,11 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ env.PYTHON_VERSION }}
           architecture: x64
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        uses: messense/maturin-action@v1
         with:
-          rust-toolchain: nightly
           target: ${{ matrix.target }}
           manylinux: musllinux_1_2
           args: --release --out dist
@@ -163,10 +180,10 @@ jobs:
           run: |
             apk add py3-pip
             pip3 install -U pip pytest
-            pip3 install starlite_http_utils --no-index --find-links /io/dist/ --force-reinstall
-            cd tests && python3 -m pytest
+            pip3 install ${{ env.PACKAGE_NAME }} --no-index --find-links /io/dist/ --force-reinstall
+            python3 -m pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: dist
@@ -184,15 +201,14 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        uses: messense/maturin-action@v1
         with:
-          rust-toolchain: nightly
           target: ${{ matrix.platform.target }}
           manylinux: musllinux_1_2
           args: --release --out dist
-      - uses: uraimo/run-on-arch-action@v2.3.0
+      - uses: uraimo/run-on-arch-action@master
         name: Install built wheel
         with:
           arch: ${{ matrix.platform.arch }}
@@ -202,26 +218,33 @@ jobs:
             apk add py3-pip
             pip3 install -U pip pytest
           run: |
-            pip3 install starlite_http_utils --no-index --find-links dist/ --force-reinstall
-            cd tests && python3 -m pytest
+            pip3 install ${{ env.PACKAGE_NAME }} --no-index --find-links dist/ --force-reinstall
+            python3 -m pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: dist
-#  release:
-#    name: Release
-#    runs-on: ubuntu-latest
-#    if: "startsWith(github.ref, 'refs/tags/')"
-#    needs: [ macos, windows, linux, linux-cross, musllinux, musllinux-cross ]
-#    steps:
-#      - uses: actions/download-artifact@v3
-#        with:
-#          name: wheels
-#      - name: Publish to PyPI
-#        env:
-#          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_PASSWORD }}
-#        uses: PyO3/maturin-action@v1
-#        with:
-#          command: upload
-#          args: --skip-existing *
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - macos
+      - windows
+      - linux
+      - linux-cross
+      - musllinux
+      - musllinux-cross
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+      - uses: actions/setup-python@v4
+      - name: Publish to PyPi
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          pip install --upgrade twine
+          twine upload --skip-existing *

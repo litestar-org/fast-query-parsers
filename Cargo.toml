@@ -1,14 +1,19 @@
 [package]
-name = "starlite_http_utils"
+name = "fast_query_parsers"
+authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
+description = "Ultra-fast query string and url-encoded form-data parsers"
+readme = "README.md"
+license-file = "LICENSE"
+repository = "https://github.com/starlite-api/fast-query-parsers"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "starlite_http_utils"
+name = "fast_query_parsers"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.17.3", features = ["extension-module"] }
+pyo3 = { version = "0.17.3", features = ["extension-module", "abi3-py38"] }
 pythonize = "0.17.0"
 rustc-hash = "1.1.0"
 serde_json = "1.0.90"
