@@ -6,14 +6,17 @@ use urlencoding::decode;
 #[inline]
 pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
     String::from_utf8(qs.to_vec())
-        .unwrap()
+        .unwrap_or_default()
         .replace('+', " ")
         .split(separator)
-        .filter(|value| !value.is_empty())
-        .map(|value| {
-            let decoded = decode(value).unwrap();
-            let (x, y) = decoded.split_once('=').unwrap_or((value, ""));
-            (x.to_owned(), y.to_owned())
+        .filter_map(|value| {
+            if !value.is_empty() {
+                return match decode(value).unwrap_or_default().split_once('=') {
+                    Some(value) => Some((value.0.to_owned(), value.1.to_owned())),
+                    None => Some((value.to_owned(), String::from(""))),
+                };
+            }
+            None
         })
         .collect::<Vec<(String, String)>>()
 }
@@ -21,7 +24,8 @@ pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
 #[inline]
 fn decode_value(json_str: String) -> Value {
     if json_str.starts_with('{') && json_str.ends_with('}') {
-        let values_map: Map<String, Value> = serde_json::from_str(json_str.as_str()).unwrap();
+        let values_map: Map<String, Value> =
+            serde_json::from_str(json_str.as_str()).unwrap_or_default();
         let mut result: Map<String, Value> = Map::new();
 
         for (k, v) in values_map {
@@ -31,7 +35,7 @@ fn decode_value(json_str: String) -> Value {
         return Value::from(result);
     }
     if json_str.starts_with('[') && json_str.ends_with(']') {
-        let values_array: Value = serde_json::from_str(json_str.as_str()).unwrap();
+        let values_array: Value = serde_json::from_str(json_str.as_str()).unwrap_or_default();
         let vector_values = values_array
             .as_array()
             .unwrap()
@@ -82,7 +86,7 @@ mod tests {
     use serde_json::{json, to_string, Value};
 
     fn eq_str(value: Value, string: &str) {
-        assert_eq!(&to_string(&value).unwrap(), string)
+        assert_eq!(&to_string(&value).unwrap_or_default(), string)
     }
 
     #[test]
