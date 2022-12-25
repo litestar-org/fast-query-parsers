@@ -1,15 +1,15 @@
 [package]
-name = "starlite_http_utils"
+name = "fast_query_parsers"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
-description = "Rust based http utils for the Starlite API Framework"
+description = "Ultra-fast query string and url-encoded form-data parsers"
 readme = "README.md"
 license-file = "LICENSE"
-repository = "https://github.com/starlite-api/http-utils"
+repository = "https://github.com/starlite-api/fast-query-parsers"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "starlite_http_utils"
+name = "fast_query_parsers"
 crate-type = ["cdylib"]
 
 [dependencies]
