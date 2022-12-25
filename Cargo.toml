@@ -1,5 +1,9 @@
 [package]
 name = "starlite_http_utils"
+authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
+description = "Rust based http utils for the Starlite API Framework"
+license = "MIT"
+repository = "https://github.com/starlite-api/http-utils"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,7 +12,7 @@ name = "starlite_http_utils"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.17.3", features = ["extension-module"] }
+pyo3 = { version = "0.17.3", features = ["extension-module", "abi3-py38"] }
 pythonize = "0.17.0"
 rustc-hash = "1.1.0"
 serde_json = "1.0.90"

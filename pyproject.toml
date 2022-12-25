@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "starlite_http_utils"
 version = "0.1.0"
-description = ""
+description = "Rust based utilities for the Starlite API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 license = "MIT"
 readme = "README.md"
