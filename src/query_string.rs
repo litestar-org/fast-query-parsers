@@ -240,7 +240,8 @@ mod tests {
         assert_eq!(
             result,
             json!(
-                {   "_id": "637ca2c6a8178b1d6aab4140",
+                {
+                    "_id": "637ca2c6a8178b1d6aab4140",
                     "about": "Deserunt nostrud quis enim fugiat labore labore sint deserunt aliquip est fugiat mollit commodo. Labore pariatur laboris ut irure voluptate aliqua non ex enim. Dolor ea mollit dolore anim eu velit labore aliquip laborum irure duis aliqua sunt sint. Ex elit ea irure nisi qui exercitation ullamco occaecat eu culpa magna quis dolor dolor. Officia nostrud consectetur exercitation consequat qui est dolore cillum dolor minim tempor.\r\n",
                     "address": "400 Polar Street, Emory, Palau, 3376",
                     "age": 36,
@@ -250,10 +251,10 @@ mod tests {
                     "eyeColor": "blue",
                     "favoriteFruit": "banana",
                     "friends": [
-                    "{'id': 0, 'name': 'Flora Phelps'}",
-                    "{'id': 1, 'name': 'Coffey Warner'}",
-                    "{'id': 2, 'name': 'Lyons Mccall'}"
-                ],
+                        "{'id': 0, 'name': 'Flora Phelps'}",
+                        "{'id': 1, 'name': 'Coffey Warner'}",
+                        "{'id': 2, 'name': 'Lyons Mccall'}"
+                    ],
                     "gender": "female",
                     "greeting": "Hello, Colette Suarez! You have 4 unread messages.",
                     "guid": "92d50031-11ee-4756-af59-cd47a45082e7",
@@ -265,9 +266,16 @@ mod tests {
                     "phone": "+1 (841) 509-2669",
                     "picture": "http://placehold.it/32x32",
                     "registered": "2015-12-11T05:34:25 -01:00",
-                    "tags": ["qui", "occaecat", "quis", "minim", "aliquip", "sunt", "pariatur"]
+                    "tags": [
+                        "qui",
+                        "occaecat",
+                        "quis",
+                        "minim",
+                        "aliquip",
+                        "sunt",
+                        "pariatur"
+                    ]
                 }
-
             )
         )
     }
