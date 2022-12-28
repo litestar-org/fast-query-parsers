@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fast-query-parsers"
-version = "0.1.0"
+version = "0.2.0"
 description = "Ultra-fast query string and url-encoded form-data parsers"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 license = "MIT"
