@@ -36,26 +36,29 @@ fn decode_value(json_str: String) -> Value {
     }
     if json_str.starts_with('[') && json_str.ends_with(']') {
         let values_array: Value = serde_json::from_str(json_str.as_str()).unwrap_or_default();
-        let vector_values = values_array
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|el| decode_value(el.to_string()))
-            .collect::<Vec<Value>>();
+        let vector_values = match values_array.as_array() {
+            Some(arr) => arr
+                .iter()
+                .map(|el| decode_value(el.to_string()))
+                .collect::<Vec<Value>>(),
+            None => Vec::new(),
+        };
+
         return Value::from(vector_values);
     }
+    let normalized = json_str.replace('"', "");
 
-    let json_integer = json_str.parse::<i64>();
-    let json_float = json_str.parse::<f64>();
-    let json_boolean = json_str.parse::<bool>();
-    let json_null = Ok::<_, Infallible>(json_str == "null");
+    let json_integer = normalized.parse::<i64>();
+    let json_float = normalized.parse::<f64>();
+    let json_boolean = normalized.parse::<bool>();
+    let json_null = Ok::<_, Infallible>(normalized == "null");
 
     match (json_integer, json_float, json_boolean, json_null) {
         (Ok(json_integer), _, _, _) => Value::from(json_integer),
         (_, Ok(json_float), _, _) => Value::from(json_float),
         (_, _, Ok(json_boolean), _) => Value::from(json_boolean),
         (_, _, _, Ok(true)) => Value::Null,
-        _ => Value::from(json_str.replace('"', "")),
+        _ => Value::from(normalized),
     }
 }
 
@@ -65,14 +68,24 @@ pub fn parse_query_string_to_json(bs: &[u8]) -> Value {
     let mut array_map: FxHashMap<String, Vec<String>> = FxHashMap::default();
 
     for (key, value) in parse_query_string(bs, '&') {
-        array_map.entry(key).or_default().push(value)
+        match array_map.get_mut(&key) {
+            Some(entry) => {
+                entry.push(value);
+            }
+            None => {
+                array_map.insert(key, vec![value]);
+            }
+        }
     }
 
-    for (key, value) in array_map.into_iter() {
+    for (key, value) in array_map {
         if value.len() == 1 {
             values_map.insert(key, decode_value(value[0].to_owned()));
         } else {
-            values_map.insert(key, decode_value(format!("[{}]", value.join(","))));
+            values_map.insert(
+                key,
+                decode_value(serde_json::to_string(&value).unwrap_or_default()),
+            );
         }
     }
 
@@ -219,5 +232,51 @@ mod tests {
             parse_query_string_to_json(b"a=1&a=2&a=3"),
             json!({ "a": [1,2,3] })
         );
+    }
+
+    #[test]
+    fn it_parses_random_values() {
+        let result = parse_query_string_to_json(b"_id=637ca2c6a8178b1d6aab4140&index=0&guid=92d50031-11ee-4756-af59-cd47a45082e7&isActive=false&balance=%242%2C627.33&picture=http%3A%2F%2Fplacehold.it%2F32x32&age=36&eyeColor=blue&name=Colette+Suarez&gender=female&company=ZENTILITY&email=colettesuarez%40zentility.com&phone=%2B1+%28841%29+509-2669&address=400+Polar+Street%2C+Emory%2C+Palau%2C+3376&about=Deserunt+nostrud+quis+enim+fugiat+labore+labore+sint+deserunt+aliquip+est+fugiat+mollit+commodo.+Labore+pariatur+laboris+ut+irure+voluptate+aliqua+non+ex+enim.+Dolor+ea+mollit+dolore+anim+eu+velit+labore+aliquip+laborum+irure+duis+aliqua+sunt+sint.+Ex+elit+ea+irure+nisi+qui+exercitation+ullamco+occaecat+eu+culpa+magna+quis+dolor+dolor.+Officia+nostrud+consectetur+exercitation+consequat+qui+est+dolore+cillum+dolor+minim+tempor.%0D%0A&registered=2015-12-11T05%3A34%3A25+-01%3A00&latitude=-14.326509&longitude=-32.417451&tags=qui&tags=occaecat&tags=quis&tags=minim&tags=aliquip&tags=sunt&tags=pariatur&friends=%7B%27id%27%3A+0%2C+%27name%27%3A+%27Flora+Phelps%27%7D&friends=%7B%27id%27%3A+1%2C+%27name%27%3A+%27Coffey+Warner%27%7D&friends=%7B%27id%27%3A+2%2C+%27name%27%3A+%27Lyons+Mccall%27%7D&greeting=Hello%2C+Colette+Suarez%21+You+have+4+unread+messages.&favoriteFruit=banana");
+        assert_eq!(
+            result,
+            json!(
+                {
+                    "_id": "637ca2c6a8178b1d6aab4140",
+                    "about": "Deserunt nostrud quis enim fugiat labore labore sint deserunt aliquip est fugiat mollit commodo. Labore pariatur laboris ut irure voluptate aliqua non ex enim. Dolor ea mollit dolore anim eu velit labore aliquip laborum irure duis aliqua sunt sint. Ex elit ea irure nisi qui exercitation ullamco occaecat eu culpa magna quis dolor dolor. Officia nostrud consectetur exercitation consequat qui est dolore cillum dolor minim tempor.\r\n",
+                    "address": "400 Polar Street, Emory, Palau, 3376",
+                    "age": 36,
+                    "balance": "$2,627.33",
+                    "company": "ZENTILITY",
+                    "email": "colettesuarez@zentility.com",
+                    "eyeColor": "blue",
+                    "favoriteFruit": "banana",
+                    "friends": [
+                        "{'id': 0, 'name': 'Flora Phelps'}",
+                        "{'id': 1, 'name': 'Coffey Warner'}",
+                        "{'id': 2, 'name': 'Lyons Mccall'}"
+                    ],
+                    "gender": "female",
+                    "greeting": "Hello, Colette Suarez! You have 4 unread messages.",
+                    "guid": "92d50031-11ee-4756-af59-cd47a45082e7",
+                    "index": 0,
+                    "isActive": false,
+                    "latitude": -14.326509,
+                    "longitude": -32.417451,
+                    "name": "Colette Suarez",
+                    "phone": "+1 (841) 509-2669",
+                    "picture": "http://placehold.it/32x32",
+                    "registered": "2015-12-11T05:34:25 -01:00",
+                    "tags": [
+                        "qui",
+                        "occaecat",
+                        "quis",
+                        "minim",
+                        "aliquip",
+                        "sunt",
+                        "pariatur"
+                    ]
+                }
+            )
+        )
     }
 }

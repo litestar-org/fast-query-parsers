@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl as stdlib_parse_qsl
 from urllib.parse import urlencode
 
 import pyperf
+
 from fast_query_parsers import parse_query_string, parse_url_encoded_dict
 
 url_encoded_query = urlencode(
