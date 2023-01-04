@@ -3,7 +3,7 @@ use std::convert::Infallible;
 use lazy_static::lazy_static;
 use regex::Regex;
 use rustc_hash::FxHashMap;
-use serde_json::{from_str, Map, Value};
+use serde_json::{from_str, Value};
 use urlencoding::decode;
 
 lazy_static! {
@@ -59,7 +59,6 @@ fn decode_value(json_str: String) -> Value {
 
 #[inline]
 pub fn parse_query_string_to_json(bs: &[u8]) -> Value {
-    let mut values_map: Map<String, Value> = Map::new();
     let mut array_map: FxHashMap<String, Vec<Value>> = FxHashMap::default();
 
     for (key, value) in parse_query_string(bs, '&') {
@@ -73,15 +72,16 @@ pub fn parse_query_string_to_json(bs: &[u8]) -> Value {
         }
     }
 
-    for (key, value) in array_map {
-        if value.len() == 1 {
-            values_map.insert(key, value[0].to_owned());
-        } else {
-            values_map.insert(key, Value::Array(value));
-        }
-    }
-
-    values_map.into()
+    array_map
+        .iter()
+        .map(|(key, value)| {
+            if value.len() == 1 {
+                (key, value[0].to_owned())
+            } else {
+                (key, Value::Array(value.to_owned()))
+            }
+        })
+        .collect::<Value>()
 }
 
 #[cfg(test)]
