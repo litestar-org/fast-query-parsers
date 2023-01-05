@@ -1,7 +1,14 @@
-use rustc_hash::FxHashMap;
-use serde_json::{Map, Value};
 use std::convert::Infallible;
+
+use lazy_static::lazy_static;
+use regex::Regex;
+use rustc_hash::FxHashMap;
+use serde_json::{from_str, Value};
 use urlencoding::decode;
+
+lazy_static! {
+    static ref PARENTHESES_RE: Regex = Regex::new(r"(^\[.*\]$|^\{.*\}$)").unwrap();
+}
 
 #[inline]
 pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
@@ -12,7 +19,7 @@ pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
         .filter_map(|value| {
             if !value.is_empty() {
                 return match decode(value).unwrap_or_default().split_once('=') {
-                    Some(value) => Some((value.0.to_owned(), value.1.to_owned())),
+                    Some((key, value)) => Some((key.to_owned(), value.to_owned())),
                     None => Some((value.to_owned(), String::from(""))),
                 };
             }
@@ -23,29 +30,17 @@ pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
 
 #[inline]
 fn decode_value(json_str: String) -> Value {
-    if json_str.starts_with('{') && json_str.ends_with('}') {
-        let values_map: Map<String, Value> =
-            serde_json::from_str(json_str.as_str()).unwrap_or_default();
-        let mut result: Map<String, Value> = Map::new();
-
-        for (k, v) in values_map {
-            result.insert(k, decode_value(v.to_string()));
-        }
-
-        return Value::from(result);
-    }
-    if json_str.starts_with('[') && json_str.ends_with(']') {
-        let values_array: Value = serde_json::from_str(json_str.as_str()).unwrap_or_default();
-        let vector_values = match values_array.as_array() {
-            Some(arr) => arr
-                .iter()
-                .map(|el| decode_value(el.to_string()))
-                .collect::<Vec<Value>>(),
-            None => Vec::new(),
+    if PARENTHESES_RE.is_match(json_str.as_str()) {
+        let result: Value = match from_str(json_str.as_str()) {
+            Ok(value) => value,
+            Err(_) => match from_str(json_str.replace('\'', "\"").as_str()) {
+                Ok(normalized) => normalized,
+                Err(_) => Value::Null,
+            },
         };
-
-        return Value::from(vector_values);
+        return result;
     }
+
     let normalized = json_str.replace('"', "");
 
     let json_integer = normalized.parse::<i64>();
@@ -64,39 +59,36 @@ fn decode_value(json_str: String) -> Value {
 
 #[inline]
 pub fn parse_query_string_to_json(bs: &[u8]) -> Value {
-    let mut values_map: Map<String, Value> = Map::new();
-    let mut array_map: FxHashMap<String, Vec<String>> = FxHashMap::default();
+    let mut array_map: FxHashMap<String, Vec<Value>> = FxHashMap::default();
 
     for (key, value) in parse_query_string(bs, '&') {
         match array_map.get_mut(&key) {
             Some(entry) => {
-                entry.push(value);
+                entry.push(decode_value(value));
             }
             None => {
-                array_map.insert(key, vec![value]);
+                array_map.insert(key, vec![decode_value(value)]);
             }
         }
     }
 
-    for (key, value) in array_map {
-        if value.len() == 1 {
-            values_map.insert(key, decode_value(value[0].to_owned()));
-        } else {
-            values_map.insert(
-                key,
-                decode_value(serde_json::to_string(&value).unwrap_or_default()),
-            );
-        }
-    }
-
-    values_map.into()
+    array_map
+        .iter()
+        .map(|(key, value)| {
+            if value.len() == 1 {
+                (key, value[0].to_owned())
+            } else {
+                (key, Value::Array(value.to_owned()))
+            }
+        })
+        .collect::<Value>()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     use serde_json::{json, to_string, Value};
+
+    use super::*;
 
     fn eq_str(value: Value, string: &str) {
         assert_eq!(&to_string(&value).unwrap_or_default(), string)
@@ -239,8 +231,7 @@ mod tests {
         let result = parse_query_string_to_json(b"_id=637ca2c6a8178b1d6aab4140&index=0&guid=92d50031-11ee-4756-af59-cd47a45082e7&isActive=false&balance=%242%2C627.33&picture=http%3A%2F%2Fplacehold.it%2F32x32&age=36&eyeColor=blue&name=Colette+Suarez&gender=female&company=ZENTILITY&email=colettesuarez%40zentility.com&phone=%2B1+%28841%29+509-2669&address=400+Polar+Street%2C+Emory%2C+Palau%2C+3376&about=Deserunt+nostrud+quis+enim+fugiat+labore+labore+sint+deserunt+aliquip+est+fugiat+mollit+commodo.+Labore+pariatur+laboris+ut+irure+voluptate+aliqua+non+ex+enim.+Dolor+ea+mollit+dolore+anim+eu+velit+labore+aliquip+laborum+irure+duis+aliqua+sunt+sint.+Ex+elit+ea+irure+nisi+qui+exercitation+ullamco+occaecat+eu+culpa+magna+quis+dolor+dolor.+Officia+nostrud+consectetur+exercitation+consequat+qui+est+dolore+cillum+dolor+minim+tempor.%0D%0A&registered=2015-12-11T05%3A34%3A25+-01%3A00&latitude=-14.326509&longitude=-32.417451&tags=qui&tags=occaecat&tags=quis&tags=minim&tags=aliquip&tags=sunt&tags=pariatur&friends=%7B%27id%27%3A+0%2C+%27name%27%3A+%27Flora+Phelps%27%7D&friends=%7B%27id%27%3A+1%2C+%27name%27%3A+%27Coffey+Warner%27%7D&friends=%7B%27id%27%3A+2%2C+%27name%27%3A+%27Lyons+Mccall%27%7D&greeting=Hello%2C+Colette+Suarez%21+You+have+4+unread+messages.&favoriteFruit=banana");
         assert_eq!(
             result,
-            json!(
-                {
+            json!({
                     "_id": "637ca2c6a8178b1d6aab4140",
                     "about": "Deserunt nostrud quis enim fugiat labore labore sint deserunt aliquip est fugiat mollit commodo. Labore pariatur laboris ut irure voluptate aliqua non ex enim. Dolor ea mollit dolore anim eu velit labore aliquip laborum irure duis aliqua sunt sint. Ex elit ea irure nisi qui exercitation ullamco occaecat eu culpa magna quis dolor dolor. Officia nostrud consectetur exercitation consequat qui est dolore cillum dolor minim tempor.\r\n",
                     "address": "400 Polar Street, Emory, Palau, 3376",
@@ -251,9 +242,18 @@ mod tests {
                     "eyeColor": "blue",
                     "favoriteFruit": "banana",
                     "friends": [
-                        "{'id': 0, 'name': 'Flora Phelps'}",
-                        "{'id': 1, 'name': 'Coffey Warner'}",
-                        "{'id': 2, 'name': 'Lyons Mccall'}"
+                        {
+                            "id":0,
+                            "name": "Flora Phelps"
+                        },
+                        {
+                            "id":1,
+                            "name": "Coffey Warner"
+                        },
+                        {
+                            "id":2,
+                            "name": "Lyons Mccall"
+                        }
                     ],
                     "gender": "female",
                     "greeting": "Hello, Colette Suarez! You have 4 unread messages.",
@@ -263,9 +263,9 @@ mod tests {
                     "latitude": -14.326509,
                     "longitude": -32.417451,
                     "name": "Colette Suarez",
-                    "phone": "+1 (841) 509-2669",
-                    "picture": "http://placehold.it/32x32",
-                    "registered": "2015-12-11T05:34:25 -01:00",
+                    "phone":"+1 (841) 509-2669",
+                    "picture":"http://placehold.it/32x32",
+                    "registered":"2015-12-11T05:34:25 -01:00",
                     "tags": [
                         "qui",
                         "occaecat",

@@ -13,8 +13,10 @@ name = "fast_query_parsers"
 crate-type = ["cdylib"]
 
 [dependencies]
+lazy_static = "1.4.0"
 pyo3 = { version = "0.17.3", features = ["extension-module", "abi3-py38"] }
 pythonize = "0.17.0"
+regex = { version = "1.7.0", features = ["perf"] }
 rustc-hash = "1.1.0"
 serde_json = "1.0.90"
 urlencoding = "2.1.2"
