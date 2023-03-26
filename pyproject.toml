@@ -35,7 +35,6 @@ repository = "https://github.com/starlite-api/fast-query-parsers"
 
 [tool.poetry.dependencies]
 python = ">=3.8"
-maturin = "*"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
