@@ -5,7 +5,7 @@ description = "Ultra-fast query string and url-encoded form-data parsers"
 readme = "README.md"
 license-file = "LICENSE"
 repository = "https://github.com/starlite-api/fast-query-parsers"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2021"
 
 [lib]
