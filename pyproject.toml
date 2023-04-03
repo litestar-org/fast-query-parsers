@@ -1,8 +1,19 @@
 [tool.poetry]
 name = "fast-query-parsers"
-version = "0.3.1"
+version = "0.4.0"
 description = "Ultra-fast query string and url-encoded form-data parsers"
-authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
+authors = [
+    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
+    "Peter Schutt <peter.github@proton.me>",
+    "Cody Fincher <cody.fincher@gmail.com>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
+]
+maintainers = [
+    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
+    "Peter Schutt <peter.github@proton.me>",
+    "Cody Fincher <cody.fincher@gmail.com>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
+]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "src"}]
@@ -11,7 +22,7 @@ packages = [{include = "src"}]
 name = "fast-query-parsers"
 requires-python = ">=3.8"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
@@ -32,17 +43,28 @@ classifiers = [
 homepage = "https://github.com/starlite-api/fast-query-parsers"
 documentation = "https://github.com/starlite-api/fast-query-parsers/README.md"
 repository = "https://github.com/starlite-api/fast-query-parsers"
+keywords = [
+    "query",
+    "query string",
+    "qs",
+    "query parameters",
+    "rust",
+    "asgi",
+    "starlite",
+    "litestar",
+    "parser",
+]
 
 [tool.poetry.dependencies]
 python = ">=3.8"
 
 [tool.poetry.group.dev.dependencies]
-maturin = ">=0.13,<0.14"
+maturin = "*"
 pytest = "*"
 pyperf = "*"
 
 [build-system]
-requires = ["maturin>=0.13,<0.14"]
+requires = ["maturin>=0.14,<0.15"]
 build-backend = "maturin"
 
 [tool.black]
