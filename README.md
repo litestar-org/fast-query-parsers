@@ -5,7 +5,7 @@
 <!-- markdownlint-restore -->
 
 This library includes ultra-fast Rust based query string and urlencoded parsers. These parsers are used
-by [`Starlite`](https://github.com/starlite-api/starlite), but are developed separately - and can of course be used separately.
+by [`Litestar`](https://github.com/litestar-org/litestar), but are developed separately - and can of course be used separately.
 
 <div align="center">
 
