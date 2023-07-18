@@ -7,7 +7,6 @@ from urllib.parse import parse_qsl as stdlib_parse_qsl
 from urllib.parse import urlencode
 
 import pyperf
-
 from fast_query_parsers import parse_query_string, parse_url_encoded_dict
 
 url_encoded_query = urlencode(
@@ -25,16 +24,19 @@ url_encoded_query = urlencode(
 
 def parse_url_encoded_form_data(encoded_data: bytes) -> Dict[str, Any]:
     """Parse an url encoded form data dict.
+
     Args:
+    ----
         encoded_data: The encoded byte string.
-        encoding: The encoding used.
+
     Returns:
+    -------
         A parsed dict.
     """
     decoded_dict: DefaultDict[str, List[Any]] = defaultdict(list)
     for k, v in stdlib_parse_qsl(encoded_data.decode(), keep_blank_values=True):
         with suppress(JSONDecodeError):
-            v = loads(v) if isinstance(v, str) else v
+            v = loads(v) if isinstance(v, str) else v  # noqa: PLW2901
         decoded_dict[k].append(v)
     return {k: v if len(v) > 1 else v[0] for k, v in decoded_dict.items()}
 

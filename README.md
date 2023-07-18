@@ -61,20 +61,20 @@ from urllib.parse import urlencode
 
 from fast_query_parsers import parse_url_encoded_dict
 
-result = parse_url_encoded_dict(
-    urlencode(
-        [
-            ("value", "10"),
-            ("value", "12"),
-            ("veggies", '["tomato", "potato", "aubergine"]'),
-            ("nested", '{"some_key": "some_value"}'),
-            ("calories", "122.53"),
-            ("healthy", "true"),
-            ("polluting", "false"),
-            ("json", "null"),
-        ]
-    ).encode()
-)
+encoded = urlencode(
+    [
+        ("value", "10"),
+        ("value", "12"),
+        ("veggies", '["tomato", "potato", "aubergine"]'),
+        ("nested", '{"some_key": "some_value"}'),
+        ("calories", "122.53"),
+        ("healthy", "true"),
+        ("polluting", "false"),
+        ("json", "null"),
+    ]
+).encode()
+
+result = parse_url_encoded_dict(encoded, True)
 
 # result == {
 #     "value": [10, 12],
@@ -90,6 +90,9 @@ result = parse_url_encoded_dict(
 This function handles type conversions correctly - unlike the standard library function `parse_qs`. Additionally, it
 does not nest all values inside lists.
 
+Note: the second argument passed to `parse_url_encoded_dict` dictates whether numbers should be parsed. If `True`,
+the value will be parsed into an int or float as appropriate, otherwise it will be kept as a string.
+
 #### Benchmarks
 
 Url Encoded parsing is more than x2 times faster than the standard library, without accounting for parsing of values:
@@ -100,7 +103,7 @@ stdlib parse_qs parsing url-encoded values into dict: Mean +- std dev: 8.99 us +
 parse_url_encoded_dict parse url-encoded values into dict: Mean +- std dev: 3.77 us +- 0.08 us
 ```
 
-To actually mimick the parsing done by `parse_url_encoded_dict` we will need a utility along these lines:
+To actually mimic the parsing done by `parse_url_encoded_dict` we will need a utility along these lines:
 
 ```python
 from collections import defaultdict

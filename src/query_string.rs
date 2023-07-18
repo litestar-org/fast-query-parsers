@@ -29,7 +29,7 @@ pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
 }
 
 #[inline]
-fn decode_value(json_str: String) -> Value {
+fn decode_value(json_str: String, parse_numbers: bool) -> Value {
     if PARENTHESES_RE.is_match(json_str.as_str()) {
         let result: Value = match from_str(json_str.as_str()) {
             Ok(value) => value,
@@ -42,32 +42,39 @@ fn decode_value(json_str: String) -> Value {
     }
 
     let normalized = json_str.replace('"', "");
-
-    let json_integer = normalized.parse::<i64>();
-    let json_float = normalized.parse::<f64>();
     let json_boolean = normalized.parse::<bool>();
     let json_null = Ok::<_, Infallible>(normalized == "null");
 
-    match (json_integer, json_float, json_boolean, json_null) {
-        (Ok(json_integer), _, _, _) => Value::from(json_integer),
-        (_, Ok(json_float), _, _) => Value::from(json_float),
-        (_, _, Ok(json_boolean), _) => Value::from(json_boolean),
-        (_, _, _, Ok(true)) => Value::Null,
+    if parse_numbers {
+        let json_integer = normalized.parse::<i64>();
+        let json_float = normalized.parse::<f64>();
+        return match (json_integer, json_float, json_boolean, json_null) {
+            (Ok(json_integer), _, _, _) => Value::from(json_integer),
+            (_, Ok(json_float), _, _) => Value::from(json_float),
+            (_, _, Ok(json_boolean), _) => Value::from(json_boolean),
+            (_, _, _, Ok(true)) => Value::Null,
+            _ => Value::from(normalized),
+        };
+    }
+
+    match (json_boolean, json_null) {
+        (Ok(json_boolean), _) => Value::from(json_boolean),
+        (_, Ok(true)) => Value::Null,
         _ => Value::from(normalized),
     }
 }
 
 #[inline]
-pub fn parse_query_string_to_json(bs: &[u8]) -> Value {
+pub fn parse_query_string_to_json(bs: &[u8], parse_numbers: bool) -> Value {
     let mut array_map: FxHashMap<String, Vec<Value>> = FxHashMap::default();
 
     for (key, value) in parse_query_string(bs, '&') {
         match array_map.get_mut(&key) {
             Some(entry) => {
-                entry.push(decode_value(value));
+                entry.push(decode_value(value, parse_numbers));
             }
             None => {
-                array_map.insert(key, vec![decode_value(value)]);
+                array_map.insert(key, vec![decode_value(value, parse_numbers)]);
             }
         }
     }
@@ -153,82 +160,120 @@ mod tests {
     }
 
     #[test]
-    fn it_parses_simple_string() {
-        eq_str(parse_query_string_to_json(b"0=foo"), r#"{"0":"foo"}"#);
+    fn parse_query_string_to_json_parses_simple_string() {
+        eq_str(parse_query_string_to_json(b"0=foo", true), r#"{"0":"foo"}"#);
     }
 
     #[test]
-    fn it_transforms_standalone_keys() {
+    fn parse_query_string_to_json_transforms_standalone_keys() {
         eq_str(
-            parse_query_string_to_json(b"foo=bar&baz"),
+            parse_query_string_to_json(b"foo=bar&baz", true),
             r#"{"baz":"","foo":"bar"}"#,
         );
     }
 
     #[test]
-    fn it_doesnt_produce_empty_keys() {
-        assert_eq!(parse_query_string_to_json(b"_r=1&"), json!({"_r": 1}));
+    fn parse_query_string_to_json_doesnt_produce_empty_keys() {
+        assert_eq!(parse_query_string_to_json(b"_r=1&", true), json!({"_r": 1}));
     }
 
     #[test]
-    fn it_parses_plus_sign() {
+    fn parse_query_string_to_json_parses_plus_sign() {
         eq_str(
-            parse_query_string_to_json(b"a=b%20c+d%2B"),
+            parse_query_string_to_json(b"a=b%20c+d%2B", true),
             r#"{"a":"b c d+"}"#,
         );
     }
 
     #[test]
-    fn it_parses_numbers() {
-        assert_eq!(parse_query_string_to_json(b"a=1"), json!({"a": 1}));
-        assert_eq!(parse_query_string_to_json(b"a=1.1"), json!({"a": 1.1}));
-        assert_eq!(parse_query_string_to_json(b"a=1.1e1"), json!({"a": 11.0}));
-        assert_eq!(parse_query_string_to_json(b"a=1.1e-1"), json!({"a": 0.11}));
-    }
-
-    #[test]
-    fn it_parses_booleans() {
-        assert_eq!(parse_query_string_to_json(b"a=true"), json!({"a": true}));
-        assert_eq!(parse_query_string_to_json(b"a=false"), json!({"a": false}));
-    }
-
-    #[test]
-    fn it_parses_nested_objects() {
+    fn parse_query_string_to_json_parses_numbers_if_parse_numbers_is_true() {
+        assert_eq!(parse_query_string_to_json(b"a=1", true), json!({"a": 1}));
         assert_eq!(
-            parse_query_string_to_json(r#"a={"first": 1, "second": 2, "third": "abc"}"#.as_bytes()),
+            parse_query_string_to_json(b"a=1.1", true),
+            json!({"a": 1.1})
+        );
+        assert_eq!(
+            parse_query_string_to_json(b"a=1.1e1", true),
+            json!({"a": 11.0})
+        );
+        assert_eq!(
+            parse_query_string_to_json(b"a=1.1e-1", true),
+            json!({"a": 0.11})
+        );
+    }
+
+    #[test]
+    fn parse_query_string_to_json_parses_numbers_to_string_if_parse_numbers_is_false() {
+        assert_eq!(parse_query_string_to_json(b"a=1", false), json!({"a": "1"}));
+        assert_eq!(
+            parse_query_string_to_json(b"a=1.1", false),
+            json!({"a": "1.1"})
+        );
+        assert_eq!(
+            parse_query_string_to_json(b"a=1.1e1", false),
+            json!({"a": "1.1e1"})
+        );
+        assert_eq!(
+            parse_query_string_to_json(b"a=1.1e-1", false),
+            json!({"a": "1.1e-1"})
+        );
+    }
+
+    #[test]
+    fn parse_query_string_to_json_parses_booleans() {
+        assert_eq!(
+            parse_query_string_to_json(b"a=true", false),
+            json!({"a": true})
+        );
+        assert_eq!(
+            parse_query_string_to_json(b"a=false", false),
+            json!({"a": false})
+        );
+    }
+
+    #[test]
+    fn parse_query_string_to_json_parses_nested_objects() {
+        assert_eq!(
+            parse_query_string_to_json(
+                r#"a={"first": 1, "second": 2, "third": "abc"}"#.as_bytes(),
+                true
+            ),
             json!({"a": {"first": 1, "second": 2, "third": "abc"}})
         );
     }
 
     #[test]
-    fn it_parses_nested_arrays() {
+    fn parse_query_string_to_json_parses_nested_arrays() {
         assert_eq!(
-            parse_query_string_to_json(r#"a=[1,2,3,"abc"]"#.as_bytes()),
+            parse_query_string_to_json(r#"a=[1,2,3,"abc"]"#.as_bytes(), true),
             json!({"a": [1,2,3,"abc"]})
         );
     }
 
     #[test]
-    fn it_parses_null() {
-        assert_eq!(parse_query_string_to_json(b"a=null"), json!({ "a": null }));
-    }
-
-    #[test]
-    fn it_parses_empty_string() {
-        assert_eq!(parse_query_string_to_json(b"a="), json!({ "a": "" }));
-    }
-
-    #[test]
-    fn it_parses_a_list_of_values() {
+    fn parse_query_string_to_json_parses_null() {
         assert_eq!(
-            parse_query_string_to_json(b"a=1&a=2&a=3"),
+            parse_query_string_to_json(b"a=null", true),
+            json!({ "a": null })
+        );
+    }
+
+    #[test]
+    fn parse_query_string_to_json_parses_empty_string() {
+        assert_eq!(parse_query_string_to_json(b"a=", true), json!({ "a": "" }));
+    }
+
+    #[test]
+    fn parse_query_string_to_json_parses_a_list_of_values() {
+        assert_eq!(
+            parse_query_string_to_json(b"a=1&a=2&a=3", true),
             json!({ "a": [1,2,3] })
         );
     }
 
     #[test]
-    fn it_parses_random_values() {
-        let result = parse_query_string_to_json(b"_id=637ca2c6a8178b1d6aab4140&index=0&guid=92d50031-11ee-4756-af59-cd47a45082e7&isActive=false&balance=%242%2C627.33&picture=http%3A%2F%2Fplacehold.it%2F32x32&age=36&eyeColor=blue&name=Colette+Suarez&gender=female&company=ZENTILITY&email=colettesuarez%40zentility.com&phone=%2B1+%28841%29+509-2669&address=400+Polar+Street%2C+Emory%2C+Palau%2C+3376&about=Deserunt+nostrud+quis+enim+fugiat+labore+labore+sint+deserunt+aliquip+est+fugiat+mollit+commodo.+Labore+pariatur+laboris+ut+irure+voluptate+aliqua+non+ex+enim.+Dolor+ea+mollit+dolore+anim+eu+velit+labore+aliquip+laborum+irure+duis+aliqua+sunt+sint.+Ex+elit+ea+irure+nisi+qui+exercitation+ullamco+occaecat+eu+culpa+magna+quis+dolor+dolor.+Officia+nostrud+consectetur+exercitation+consequat+qui+est+dolore+cillum+dolor+minim+tempor.%0D%0A&registered=2015-12-11T05%3A34%3A25+-01%3A00&latitude=-14.326509&longitude=-32.417451&tags=qui&tags=occaecat&tags=quis&tags=minim&tags=aliquip&tags=sunt&tags=pariatur&friends=%7B%27id%27%3A+0%2C+%27name%27%3A+%27Flora+Phelps%27%7D&friends=%7B%27id%27%3A+1%2C+%27name%27%3A+%27Coffey+Warner%27%7D&friends=%7B%27id%27%3A+2%2C+%27name%27%3A+%27Lyons+Mccall%27%7D&greeting=Hello%2C+Colette+Suarez%21+You+have+4+unread+messages.&favoriteFruit=banana");
+    fn parse_query_string_to_json_parses_random_values() {
+        let result = parse_query_string_to_json(b"_id=637ca2c6a8178b1d6aab4140&index=0&guid=92d50031-11ee-4756-af59-cd47a45082e7&isActive=false&balance=%242%2C627.33&picture=http%3A%2F%2Fplacehold.it%2F32x32&age=36&eyeColor=blue&name=Colette+Suarez&gender=female&company=ZENTILITY&email=colettesuarez%40zentility.com&phone=%2B1+%28841%29+509-2669&address=400+Polar+Street%2C+Emory%2C+Palau%2C+3376&about=Deserunt+nostrud+quis+enim+fugiat+labore+labore+sint+deserunt+aliquip+est+fugiat+mollit+commodo.+Labore+pariatur+laboris+ut+irure+voluptate+aliqua+non+ex+enim.+Dolor+ea+mollit+dolore+anim+eu+velit+labore+aliquip+laborum+irure+duis+aliqua+sunt+sint.+Ex+elit+ea+irure+nisi+qui+exercitation+ullamco+occaecat+eu+culpa+magna+quis+dolor+dolor.+Officia+nostrud+consectetur+exercitation+consequat+qui+est+dolore+cillum+dolor+minim+tempor.%0D%0A&registered=2015-12-11T05%3A34%3A25+-01%3A00&latitude=-14.326509&longitude=-32.417451&tags=qui&tags=occaecat&tags=quis&tags=minim&tags=aliquip&tags=sunt&tags=pariatur&friends=%7B%27id%27%3A+0%2C+%27name%27%3A+%27Flora+Phelps%27%7D&friends=%7B%27id%27%3A+1%2C+%27name%27%3A+%27Coffey+Warner%27%7D&friends=%7B%27id%27%3A+2%2C+%27name%27%3A+%27Lyons+Mccall%27%7D&greeting=Hello%2C+Colette+Suarez%21+You+have+4+unread+messages.&favoriteFruit=banana", true);
         assert_eq!(
             result,
             json!({

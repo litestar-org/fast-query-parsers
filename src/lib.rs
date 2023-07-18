@@ -14,9 +14,9 @@ fn parse_query_string(qs: &[u8], separator: char) -> PyResult<Vec<(String, Strin
 
 // parse query string into a python object.
 #[pyfunction]
-#[pyo3(text_signature = "(qs, /)")]
-fn parse_url_encoded_dict(py: Python, qs: &[u8]) -> PyResult<PyObject> {
-    Ok(pythonize(py, &parse_query_string_to_json(qs)).unwrap())
+#[pyo3(text_signature = "(qs, parse_numbers, /)")]
+fn parse_url_encoded_dict(py: Python, qs: &[u8], parse_numbers: bool) -> PyResult<PyObject> {
+    Ok(pythonize(py, &parse_query_string_to_json(qs, parse_numbers)).unwrap())
 }
 
 #[pymodule]
