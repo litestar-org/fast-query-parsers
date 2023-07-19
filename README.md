@@ -74,7 +74,7 @@ encoded = urlencode(
     ]
 ).encode()
 
-result = parse_url_encoded_dict(encoded, True)
+result = parse_url_encoded_dict(encoded, parse_numbers=True)
 
 # result == {
 #     "value": [10, 12],
@@ -92,6 +92,7 @@ does not nest all values inside lists.
 
 Note: the second argument passed to `parse_url_encoded_dict` dictates whether numbers should be parsed. If `True`,
 the value will be parsed into an int or float as appropriate, otherwise it will be kept as a string.
+By default the value of this arg is `True`.
 
 #### Benchmarks
 
