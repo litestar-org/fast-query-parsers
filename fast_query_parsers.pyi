@@ -12,7 +12,7 @@ Returns:
     A list of string/string tuples.
 """
 
-def parse_url_encoded_dict(qs: bytes, parse_numbers: bool) -> dict[str, Any]: ...
+def parse_url_encoded_dict(qs: bytes, parse_numbers: bool = False) -> dict[str, Any]: ...
 
 """Parse a query string into a dictionary of values.
 
