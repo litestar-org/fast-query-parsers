@@ -77,3 +77,7 @@ def test_parses_non_ascii_text() -> None:
     assert parse_query_string("arabic_text=اختبار اللغة العربية".encode(), "&") == [
         ("arabic_text", "اختبار اللغة العربية")
     ]
+
+
+def test_kwargs() -> None:
+    assert parse_query_string(qs=b"foo=bar", separator="&") == [("foo", "bar")]

@@ -53,3 +53,16 @@ def test_parse_urlencoded_defaults_parse_numbers_true() -> None:
         "polluting": False,
         "json": None,
     }
+
+
+def test_parse_urlencoded_kwargs() -> None:
+    result = parse_url_encoded_dict(qs=encoded, parse_numbers=True)
+    assert result == {
+        "value": [10, 12],
+        "veggies": ["tomato", "potato", "aubergine"],
+        "nested": {"some_key": "some_value"},
+        "calories": 122.53,
+        "healthy": True,
+        "polluting": False,
+        "json": None,
+    }
