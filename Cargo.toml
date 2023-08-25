@@ -5,7 +5,7 @@ description = "Ultra-fast query string and url-encoded form-data parsers"
 readme = "README.md"
 license-file = "LICENSE"
 repository = "https://github.com/starlite-api/fast-query-parsers"
-version = "1.0.2"
+version = "1.0.3"
 edition = "2021"
 
 [lib]
@@ -14,9 +14,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 lazy_static = "1.4.0"
-pyo3 = { version = "0.19.1", features = ["extension-module", "abi3-py38"] }
+pyo3 = { version = "0.19.2", features = ["extension-module", "abi3-py38"] }
 pythonize = "0.19.0"
-regex = { version = "1.7.0", features = ["perf"] }
+regex = { version = "1.9.3", features = ["perf"] }
 rustc-hash = "1.1.0"
-serde_json = "1.0.90"
-urlencoding = "2.1.2"
+serde_json = "1.0.105"
+urlencoding = "2.1.3"
