@@ -4,13 +4,9 @@ version = "1.0.3"
 description = "Ultra-fast query string and url-encoded form-data parsers"
 authors = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-    "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
-    "Jacob Coffee <jacob@z7x.org>",
 ]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-    "Jacob Coffee <jacob@z7x.org>",
 ]
 license = "MIT"
 readme = "README.md"
