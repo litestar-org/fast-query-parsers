@@ -6,7 +6,7 @@ groups = ["default", "dev", "sourcery"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:7a51d1b3582a6314e67cf3d38a4574bb545b78d355936e4e37814edb073fe88c"
+content_hash = "sha256:622b838a8f2497013a3233e71c5b8840d1e394e5b5ed41291b69424a3d660251"
 
 [[package]]
 name = "cfgv"
@@ -122,6 +122,16 @@ summary = "Core utilities for Python packages"
 files = [
     {file = "packaging-23.2-py3-none-any.whl", hash = "sha256:8c491190033a9af7e1d931d0b5dacc2ef47509b34dd0de67ed209b5203fc88c7"},
     {file = "packaging-23.2.tar.gz", hash = "sha256:048fb0e9405036518eaaf48a55953c750c11e1a1b68e0dd1a9d62ed0c092cfc5"},
+]
+
+[[package]]
+name = "pip"
+version = "23.2.1"
+requires_python = ">=3.7"
+summary = "The PyPA recommended tool for installing Python packages."
+files = [
+    {file = "pip-23.2.1-py3-none-any.whl", hash = "sha256:7ccf472345f20d35bdc9d1841ff5f313260c2c33fe417f48c30ac46cccabf5be"},
+    {file = "pip-23.2.1.tar.gz", hash = "sha256:fb0bd5435b3200c602b5bf61d2d43c2f13c02e29c1707567ae7fbc514eb9faf2"},
 ]
 
 [[package]]

@@ -57,7 +57,8 @@ install:											## Install the project, dependencies, and pre-commit for loca
 .PHONY: clean
 clean: 												## Cleanup temporary build artifacts
 	@echo "=> Cleaning working directory"
-	@rm -rf .pytest_cache .ruff_cache .hypothesis build/ -rf dist/ .eggs/ target/
+	@rm -rf .pytest_cache .ruff_cache .hypothesis build/ -rf dist/ .eggs/
+	@cargo clean
 	@find . -name '*.egg-info' -exec rm -rf {} +
 	@find . -name '*.egg' -exec rm -f {} +
 	@find . -name '*.pyc' -exec rm -f {} +
@@ -113,6 +114,7 @@ coverage:  											## Run the tests and generate coverage report
 test:  												## Run the tests
 	@echo "=> Running test cases"
 	@$(ENV_PREFIX)pytest tests
+	@cargo test
 	@echo "=> Tests complete"
 
 .PHONY: test-all
