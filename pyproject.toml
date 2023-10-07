@@ -40,6 +40,9 @@ authors = [
 ]
 maintainers = [
     {name = "Jacob Coffee", email = "jacob@z7x.org"},
+    {name = "Cody Fincher", email = "cody.fincher@gmail.com"},
+    {name = "Janek Nouvertné", email = "provinzkraut@posteo.de"},
+    {name = "Peter Schutt", email = "peter.github@proton.me"},
 ]
 
 [tool.pdm.dev-dependencies]
