@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from contextlib import suppress
 from json import JSONDecodeError, loads
-from typing import Any, DefaultDict, Dict, List
+from typing import Any
 from urllib.parse import parse_qs as stdlib_parse_qs
 from urllib.parse import parse_qsl as stdlib_parse_qsl
 from urllib.parse import urlencode
@@ -18,11 +20,11 @@ url_encoded_query = urlencode(
         ("calories", "122.53"),
         ("healthy", True),
         ("polluting", False),
-    ]
+    ],
 ).encode()
 
 
-def parse_url_encoded_form_data(encoded_data: bytes) -> Dict[str, Any]:
+def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, Any]:
     """Parse an url encoded form data dict.
 
     Args:
@@ -33,7 +35,7 @@ def parse_url_encoded_form_data(encoded_data: bytes) -> Dict[str, Any]:
     -------
         A parsed dict.
     """
-    decoded_dict: DefaultDict[str, List[Any]] = defaultdict(list)
+    decoded_dict: defaultdict[str, list[Any]] = defaultdict(list)
     for k, v in stdlib_parse_qsl(encoded_data.decode(), keep_blank_values=True):
         with suppress(JSONDecodeError):
             v = loads(v) if isinstance(v, str) else v  # noqa: PLW2901
@@ -41,7 +43,7 @@ def parse_url_encoded_form_data(encoded_data: bytes) -> Dict[str, Any]:
     return {k: v if len(v) > 1 else v[0] for k, v in decoded_dict.items()}
 
 
-def bench_qsl(runner: pyperf.Runner):
+def bench_qsl(runner: pyperf.Runner) -> None:
     runner.bench_func(
         "stdlib parse_qsl parsing query string",
         lambda: stdlib_parse_qsl(b"key=1&key=2&key=3&another=a&zorg=5=".decode(), keep_blank_values=True),
@@ -57,7 +59,7 @@ def bench_qsl(runner: pyperf.Runner):
     runner.bench_func("parse_query_string urlencoded query string", lambda: parse_query_string(url_encoded_query, "&"))
 
 
-def bench_qs(runner: pyperf.Runner):
+def bench_qs(runner: pyperf.Runner) -> None:
     runner.bench_func(
         "stdlib parse_qs parsing url-encoded values into dict",
         lambda: stdlib_parse_qs(url_encoded_query.decode()),
@@ -67,7 +69,8 @@ def bench_qs(runner: pyperf.Runner):
         lambda: parse_url_encoded_form_data(url_encoded_query),
     )
     runner.bench_func(
-        "parse_url_encoded_dict parsing url-encoded values into dict", lambda: parse_url_encoded_dict(url_encoded_query)
+        "parse_url_encoded_dict parsing url-encoded values into dict",
+        lambda: parse_url_encoded_dict(url_encoded_query),
     )
 
 

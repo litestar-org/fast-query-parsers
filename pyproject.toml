@@ -1,20 +1,15 @@
-[tool.poetry]
-name = "fast-query-parsers"
-version = "1.0.3"
-description = "Ultra-fast query string and url-encoded form-data parsers"
-authors = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-]
-maintainers = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-]
-license = "MIT"
-readme = "README.md"
-packages = [{include = "src"}]
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
 
 [project]
 name = "fast-query-parsers"
 requires-python = ">=3.8"
+license = {text = "MIT"}
+version = "1.0.4"
+description = "Ultra-fast query string and url-encoded form-data parsers"
+readme = "README.md"
+dependencies = []
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -33,80 +28,45 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-
-homepage = "https://github.com/starlite-api/fast-query-parsers"
-documentation = "https://github.com/starlite-api/fast-query-parsers/README.md"
-repository = "https://github.com/starlite-api/fast-query-parsers"
 keywords = [
     "query",
-    "query string",
-    "qs",
-    "query parameters",
+    "query-parameters",
     "rust",
     "asgi",
-    "starlite",
-    "litestar",
     "parser",
 ]
+authors = [
+    {name = "Na'aman Hirschfeld", email = "nhirschfeld@gmail.com"},
+]
+maintainers = [
+    {name = "Jacob Coffee", email = "jacob@z7x.org"},
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8"
+[tool.pdm.dev-dependencies]
+dev = [
+    "pyperf>=2.6.1",
+    "maturin>=1.3.0",
+    "pytest>=7.4.2",
+    "ruff>=0.0.292",
+    "pre-commit>=3.4.0",
+    "sourcery>=1.10.1",
+]
 
-[tool.poetry.group.dev.dependencies]
-maturin = "*"
-pytest = "*"
-pyperf = "*"
+[tool.pdm.scripts]
+lint = "pre-commit run --all-files"
+test = "pytest tests"
+docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch src --watch docs --watch tests --port 8002"
+ci = {composite = ["lint", "test"]}
 
-[build-system]
-requires = ["maturin>=0.14,<0.15"]
-build-backend = "maturin"
-
-[tool.black]
-line-length = 120
-include = '\.pyi?$'
+[tool.pdm.build]
+includes = ["src"]
 
 [tool.maturin]
 sdist-include = ["Cargo.lock"]
 strip = true
 
-
 [tool.ruff]
-select = [
-    "A", # flake8-builtins
-    "B", # flake8-bugbear
-    "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
-    "D", # pydocstyle
-    "DJ", # flake8-django
-    "DTZ", # flake8-datetimez
-    "E", # pycodestyle errors
-    "ERA", # eradicate
-    "EXE", # flake8-executable
-    "F", # pyflakes
-    "G", # flake8-logging-format
-    "I", # isort
-    "ICN", # flake8-import-conventions
-    "ISC", # flake8-implicit-str-concat
-    "N", # pep8-naming
-    "PIE", # flake8-pie
-    "PLC", # pylint - convention
-    "PLE", # pylint - error
-    "PLW", # pylint - warning
-    "PTH", # flake8-use-pathlib
-    "Q", # flake8-quotes
-    "RET", # flake8-return
-    "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
-    "SIM", # flake8-simplify
-    "T10", # flake8-debugger
-    "T20", # flake8-print
-    "TCH", # flake8-type-checking
-    "TID", # flake8-tidy-imports
-    "UP", # pyupgrade
-    "W", # pycodestyle - warning
-    "YTT", # flake8-2020
-]
-
+select = ["ALL"]
 ignore = [
     "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
     "B010", # flake8-bugbear - do not call setattr with a constant attribute value
@@ -119,6 +79,7 @@ ignore = [
     "D106", # pydocstyle - missing docstring in public nested class
     "D107", # pydocstyle - missing docstring in __init__
     "D202", # pydocstyle - no blank lines allowed after function docstring
+    "D203", # pydocstyle - 1 blank line required before class docstring
     "D205", # pydocstyle - 1 blank line required between summary line and description
     "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
     "E501", # pycodestyle line too long, handled by black
@@ -128,6 +89,5 @@ ignore = [
     "D213", # multiline summary
     "D417"
 ]
-
 line-length = 120
 target-version = "py38"

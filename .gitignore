@@ -6,3 +6,9 @@ __pycache__/
 .idea
 *.profraw
 coverage*
+.venv/
+
+# pdm
+.pdm-python
+.pdm.toml
+__pypackages__/
