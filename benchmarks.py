@@ -28,11 +28,9 @@ def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, Any]:
     """Parse an url encoded form data dict.
 
     Args:
-    ----
         encoded_data: The encoded byte string.
 
     Returns:
-    -------
         A parsed dict.
     """
     decoded_dict: defaultdict[str, list[Any]] = defaultdict(list)
@@ -44,6 +42,11 @@ def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, Any]:
 
 
 def bench_qsl(runner: pyperf.Runner) -> None:
+    """Benchmarks for parsing query string.
+
+    Args:
+        runner: The pyperf runner.
+    """
     runner.bench_func(
         "stdlib parse_qsl parsing query string",
         lambda: stdlib_parse_qsl(b"key=1&key=2&key=3&another=a&zorg=5=".decode(), keep_blank_values=True),
@@ -60,6 +63,11 @@ def bench_qsl(runner: pyperf.Runner) -> None:
 
 
 def bench_qs(runner: pyperf.Runner) -> None:
+    """Benchmarks for parsing url-encoded values into dict.
+
+    Args:
+        runner: The pyperf runner.
+    """
     runner.bench_func(
         "stdlib parse_qs parsing url-encoded values into dict",
         lambda: stdlib_parse_qs(url_encoded_query.decode()),

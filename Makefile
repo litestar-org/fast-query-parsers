@@ -143,7 +143,7 @@ docs-clean: 										## Dump the existing built docs
 
 docs-serve: docs-clean 								## Serve the docs locally
 	@echo "=> Serving documentation"
-	$(ENV_PREFIX)sphinx-autobuild docs docs/_build/ -j auto --watch fast_query_parser.pyi --watch docs --watch tests --watch CONTRIBUTING.rst --port 8002
+	$(ENV_PREFIX)sphinx-autobuild docs docs/_build/ -j auto --watch fast_query_parser.pyi --watch docs --watch tests --watch CONTRIBUTING.rst --watch README.rst --port 8002
 
 docs: docs-clean 									## Dump the existing built docs and rebuild them
 	@echo "=> Building documentation"
