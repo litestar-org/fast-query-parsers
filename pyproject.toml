@@ -8,7 +8,7 @@ requires-python = ">=3.8"
 license = {text = "MIT"}
 version = "1.0.4"
 description = "Ultra-fast query string and url-encoded form-data parsers"
-readme = "README.md"
+readme = "README.rst"
 dependencies = []
 classifiers = [
     "Development Status :: 5 - Production/Stable",
