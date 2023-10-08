@@ -33,13 +33,17 @@ Query string parsing is more than x5 times faster than the standard library:
 
 .. code-block:: console
 
-   stdlib parse_qsl parsing query string: Mean +- std dev: 2.86 us +- 0.03 us
+   stdlib parse_qsl parsing query string:
+   Mean +- std dev: 2.86 us +- 0.03 us
    .....................
-   parse_query_string parsing query string: Mean +- std dev: 916 ns +- 13 ns
+   parse_query_string parsing query string:
+   Mean +- std dev: 916 ns +- 13 ns
    .....................
-   stdlib parse_qsl parsing urlencoded query string: Mean +- std dev: 8.30 us +- 0.10 us
+   stdlib parse_qsl parsing urlencoded query string:
+   Mean +- std dev: 8.30 us +- 0.10 us
    .....................
-   parse_query_string urlencoded query string: Mean +- std dev: 1.50 us +- 0.03 us
+   parse_query_string urlencoded query string:
+   Mean +- std dev: 1.50 us +- 0.03 us
 
 ``parse_url_encoded_dict``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -36,15 +36,20 @@ Benchmarks
 
 .. code-block:: console
 
-   stdlib parse_qs parsing url-encoded values into dict: Mean +- std dev: 8.99 us +- 0.09 us
+   stdlib parse_qs parsing url-encoded values into dict:
+   Mean +- std dev: 8.99 us +- 0.09 us
    .....................
-   parse_url_encoded_dict parse url-encoded values into dict: Mean +- std dev: 3.77 us +- 0.08 us
+   parse_url_encoded_dict parse url-encoded values into dict:
+   Mean +- std dev: 3.77 us +- 0.08 us
 
 Contributing
 ------------
 
 Contributions are welcome!
-Please see the :doc:`contributing` for more details.
+
+Please see the
+`contribution guide <https://litestar-org.github.com/fast-query-parsers/contributing.html>`_
+for more details.
 
 
 .. |Publish| image:: https://github.com/litestar-org/fast-query-parsers/actions/workflows/publish.yaml/badge.svg
