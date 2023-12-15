@@ -99,7 +99,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Download Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: coverage-lcov
       - name: Fix coverage file for sonarcloud
