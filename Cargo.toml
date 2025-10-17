@@ -1,3 +1,9 @@
+[profile.release]
+codegen-units = 1
+lto = "fat"
+panic = "abort"
+strip = "symbols"
+
 [package]
 name = "fast_query_parsers"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
