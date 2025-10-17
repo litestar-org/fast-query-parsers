@@ -56,6 +56,8 @@ exclude = ["**/uv.lock"]
 [tool.ruff]
 line-length = 120
 target-version = "py38"
+
+[tool.ruff.lint]
 select = [
     "A",   # flake8-builtins
     "B",   # flake8-bugbear
@@ -104,8 +106,8 @@ ignore = [
     "D107", # pydocstyle - missing docstring in __init__
     "D202", # pydocstyle - no blank lines allowed after function docstring
     "D205", # pydocstyle - 1 blank line required between summary line and description
+    "D203", # pydocstyle - incompatible with D211
     "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
-    "E501", # pycodestyle line too long, handled by black
     "N818", # pep8-naming - exception name should be named with an Error suffix
     "S311", # flake8-bandit - Standard pseudo-random generators are not suitable for security/cryptographic purposes
     "S101", # asserts
