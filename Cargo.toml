@@ -4,7 +4,7 @@ authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 description = "Ultra-fast query string and url-encoded form-data parsers"
 readme = "README.md"
 license-file = "LICENSE"
-repository = "https://github.com/litestar/fast-query-parsers"
+repository = "https://github.com/litestar-org/fast-query-parsers"
 version = "1.0.3"
 edition = "2021"
 

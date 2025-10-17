@@ -38,9 +38,9 @@ keywords = [
 ]
 
 [project.urls]
-homepage = "https://github.com/starlite-api/fast-query-parsers"
-documentation = "https://github.com/starlite-api/fast-query-parsers/README.md"
-repository = "https://github.com/starlite-api/fast-query-parsers"
+homepage = "https://github.com/litestar-org/fast-query-parsers"
+documentation = "https://github.com/litestar-org/fast-query-parsers/README.md"
+repository = "https://github.com/litestar-org/fast-query-parsers"
 
 [dependency-groups]
 dev = ["maturin>=1.9.6", "pyperf>=2.8.0", "pytest>=7.4.4", "ruff>=0.14.1"]
