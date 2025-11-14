@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl as stdlib_parse_qsl
 from urllib.parse import urlencode
 
 import pyperf
+
 from fast_query_parsers import parse_query_string, parse_url_encoded_dict
 
 url_encoded_query = urlencode(
@@ -32,6 +33,7 @@ def parse_url_encoded_form_data(encoded_data: bytes) -> Dict[str, Any]:
     Returns:
     -------
         A parsed dict.
+
     """
     decoded_dict: DefaultDict[str, List[Any]] = defaultdict(list)
     for k, v in stdlib_parse_qsl(encoded_data.decode(), keep_blank_values=True):

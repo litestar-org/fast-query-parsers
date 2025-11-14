@@ -24,9 +24,6 @@
 This library includes ultra-fast Rust based query string and urlencoded parsers. These parsers are used
 by [`Litestar`](https://github.com/litestar-org/litestar), but are developed separately - and can of course be used separately.
 
-> [!IMPORTANT]\
-> [**_Starlite has been renamed to Litestar_**](https://litestar.dev/about/organization.html#litestar-and-starlite)
-
 </div>
 
 ## Installation
@@ -153,14 +150,14 @@ All contributions are of course welcome!
 
 ### Repository Setup
 
-1. Run `cargo install` to setup the rust dependencies and `poetry install` to setup the python dependencies.
+1. Run `cargo install` to setup the rust dependencies and `uv sync` to setup the python dependencies.
 2. Install the pre-commit hooks with `pre-commit install` (requires [pre-commit](https://pre-commit.com/)).
 
 ### Building
 
-Run `poetry run maturin develop --release --strip` to install a release wheel (without debugging info). This wheel can be
+Run `uv run maturin develop --release`. This wheel can be
 used in tests and benchmarks.
 
 ### Benchmarking
 
-There are basic benchmarks using pyperf in place. To run these execute `poetry run python benchrmarks.py`.
+There are basic benchmarks using pyperf in place. To run these execute `uv run benchmarks.py`.

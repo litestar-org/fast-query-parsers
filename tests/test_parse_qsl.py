@@ -2,6 +2,7 @@ from typing import List, Tuple
 from urllib.parse import parse_qsl, urlencode
 
 import pytest
+
 from fast_query_parsers import parse_query_string
 
 
