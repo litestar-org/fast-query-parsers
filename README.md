@@ -127,7 +127,7 @@ from urllib.parse import parse_qsl
 
 
 def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, Any]:
-    """Parse an url encoded form data into dict of parsed values"""
+    """Parse a url encoded form data into dict of parsed values"""
     decoded_dict: defaultdict[str, list[Any]] = defaultdict(list)
     for k, v in parse_qsl(encoded_data.decode(), keep_blank_values=True):
         with suppress(JSONDecodeError):
