@@ -122,13 +122,13 @@ To actually mimic the parsing done by `parse_url_encoded_dict` we will need a ut
 from collections import defaultdict
 from contextlib import suppress
 from json import loads, JSONDecodeError
-from typing import Any, DefaultDict, Dict, list
+from typing import Any
 from urllib.parse import parse_qsl
 
 
-def parse_url_encoded_form_data(encoded_data: bytes) -> Dict[str, Any]:
+def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, Any]:
     """Parse an url encoded form data into dict of parsed values"""
-    decoded_dict: DefaultDict[str, list[Any]] = defaultdict(list)
+    decoded_dict: defaultdict[str, list[Any]] = defaultdict(list)
     for k, v in parse_qsl(encoded_data.decode(), keep_blank_values=True):
         with suppress(JSONDecodeError):
             v = loads(v) if isinstance(v, str) else v
