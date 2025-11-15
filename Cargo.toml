@@ -12,17 +12,20 @@ readme = "README.md"
 license-file = "LICENSE"
 repository = "https://github.com/litestar-org/fast-query-parsers"
 version = "1.0.3"
-edition = "2021"
+edition = "2024"
 
 [lib]
 name = "fast_query_parsers"
 crate-type = ["cdylib"]
 
+[build-dependencies]
+pyo3-build-config = { version = "0.27.2", features = ["resolve-config"] }
+
 [dependencies]
-lazy_static = "1.4.0"
-pyo3 = { version = "0.19.2", features = ["extension-module", "abi3-py38"] }
-pythonize = "0.19.0"
-regex = { version = "1.9.3", features = ["perf"] }
-rustc-hash = "1.1.0"
-serde_json = "1.0.105"
+lazy_static = "1.5.0"
+pyo3 = { version = "0.27.2", default-features = false, features = ["macros"] }
+pythonize = "0.27.0"
+regex = "1.12.2"
+rustc-hash = "2.1.1"
+serde_json = "1.0.145"
 urlencoding = "2.1.3"
