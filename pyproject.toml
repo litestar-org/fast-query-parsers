@@ -1,7 +1,7 @@
 [project]
 name = "fast-query-parsers"
 dynamic = ["version"]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = "MIT"
 readme = "README.md"
 classifiers = [
@@ -43,7 +43,13 @@ documentation = "https://github.com/litestar-org/fast-query-parsers/README.md"
 repository = "https://github.com/litestar-org/fast-query-parsers"
 
 [dependency-groups]
-dev = ["maturin>=1.9.6", "pyperf>=2.8.0", "pytest>=7.4.4", "ruff>=0.14.1"]
+dev = [
+    "maturin>=1.9.6",
+    "pyperf>=2.8.0",
+    "pytest>=7.4.4",
+    "pytest-run-parallel>=0.5",
+    "ruff>=0.14.1",
+]
 
 [build-system]
 requires = ["maturin>=1.9.6,<2.0"]
