@@ -20,7 +20,7 @@ fn parse_url_encoded_dict(py: Python, qs: &[u8], parse_numbers: bool) -> PyResul
 }
 
 #[pymodule]
-fn fast_query_parsers(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn fast_query_parsers(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_query_string, m)?)?;
     m.add_function(wrap_pyfunction!(parse_url_encoded_dict, m)?)?;
 
