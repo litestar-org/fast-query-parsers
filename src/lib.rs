@@ -16,7 +16,11 @@ fn parse_query_string(qs: &[u8], separator: char) -> PyResult<Vec<(String, Strin
 #[pyfunction]
 #[pyo3(signature = (qs, parse_numbers=true),text_signature = "(qs, parse_numbers=true)")]
 fn parse_url_encoded_dict(py: Python, qs: &[u8], parse_numbers: bool) -> PyResult<Py<PyAny>> {
-    Ok(pythonize(py, &parse_query_string_to_json(qs, parse_numbers)).unwrap().into())
+    Ok(
+        pythonize(py, &parse_query_string_to_json(qs, parse_numbers))
+            .unwrap()
+            .into(),
+    )
 }
 
 #[pymodule(gil_used = false)]
