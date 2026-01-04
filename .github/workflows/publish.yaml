@@ -10,7 +10,7 @@ concurrency:
 
 env:
   PACKAGE_NAME: fast_query_parsers
-  PYTHON_VERSION: "3.8"
+  PYTHON_VERSION: "3.8 3.14t"
 
 jobs:
   macos:
