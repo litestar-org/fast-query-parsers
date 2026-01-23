@@ -17,7 +17,7 @@ encoded = urlencode(
 
 
 def test_parse_urlencoded_with_parse_numbers() -> None:
-    result = parse_url_encoded_dict(encoded, True)
+    result = parse_url_encoded_dict(encoded, parse_numbers=True)
     assert result == {
         "value": [10, 12],
         "veggies": ["tomato", "potato", "aubergine"],
@@ -30,7 +30,7 @@ def test_parse_urlencoded_with_parse_numbers() -> None:
 
 
 def test_parse_urlencoded_without_parse_numbers() -> None:
-    result = parse_url_encoded_dict(encoded, False)
+    result = parse_url_encoded_dict(encoded, parse_numbers=False)
     assert result == {
         "value": ["10", "12"],
         "veggies": ["tomato", "potato", "aubergine"],

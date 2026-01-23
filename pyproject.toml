@@ -1,20 +1,9 @@
-[tool.poetry]
-name = "fast-query-parsers"
-version = "1.0.3"
-description = "Ultra-fast query string and url-encoded form-data parsers"
-authors = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-]
-maintainers = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-]
-license = "MIT"
-readme = "README.md"
-packages = [{include = "src"}]
-
 [project]
 name = "fast-query-parsers"
-requires-python = ">=3.8"
+dynamic = ["version"]
+requires-python = ">=3.7"
+license = "MIT"
+readme = "README.md"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -25,6 +14,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python",
     "Programming Language :: Rust",
@@ -33,10 +25,6 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-
-homepage = "https://github.com/starlite-api/fast-query-parsers"
-documentation = "https://github.com/starlite-api/fast-query-parsers/README.md"
-repository = "https://github.com/starlite-api/fast-query-parsers"
 keywords = [
     "query",
     "query string",
@@ -49,64 +37,28 @@ keywords = [
     "parser",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.8"
+[project.urls]
+homepage = "https://github.com/litestar-org/fast-query-parsers"
+documentation = "https://github.com/litestar-org/fast-query-parsers/README.md"
+repository = "https://github.com/litestar-org/fast-query-parsers"
 
-[tool.poetry.group.dev.dependencies]
-maturin = "*"
-pytest = "*"
-pyperf = "*"
+[dependency-groups]
+dev = ["maturin>=1.9.6", "pyperf>=2.8.0", "pytest>=7.4.4", "ruff>=0.14.1"]
 
 [build-system]
-requires = ["maturin>=0.14,<0.15"]
+requires = ["maturin>=1.9.6,<2.0"]
 build-backend = "maturin"
 
-[tool.black]
-line-length = 120
-include = '\.pyi?$'
-
 [tool.maturin]
-sdist-include = ["Cargo.lock"]
-strip = true
-
+features = ["pyo3/extension-module"]
+exclude = ["**/uv.lock"]
 
 [tool.ruff]
-select = [
-    "A", # flake8-builtins
-    "B", # flake8-bugbear
-    "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
-    "D", # pydocstyle
-    "DJ", # flake8-django
-    "DTZ", # flake8-datetimez
-    "E", # pycodestyle errors
-    "ERA", # eradicate
-    "EXE", # flake8-executable
-    "F", # pyflakes
-    "G", # flake8-logging-format
-    "I", # isort
-    "ICN", # flake8-import-conventions
-    "ISC", # flake8-implicit-str-concat
-    "N", # pep8-naming
-    "PIE", # flake8-pie
-    "PLC", # pylint - convention
-    "PLE", # pylint - error
-    "PLW", # pylint - warning
-    "PTH", # flake8-use-pathlib
-    "Q", # flake8-quotes
-    "RET", # flake8-return
-    "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
-    "SIM", # flake8-simplify
-    "T10", # flake8-debugger
-    "T20", # flake8-print
-    "TCH", # flake8-type-checking
-    "TID", # flake8-tidy-imports
-    "UP", # pyupgrade
-    "W", # pycodestyle - warning
-    "YTT", # flake8-2020
-]
+line-length = 120
+target-version = "py38"
 
+[tool.ruff.lint]
+select = ["ALL"]
 ignore = [
     "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
     "B010", # flake8-bugbear - do not call setattr with a constant attribute value
@@ -120,14 +72,11 @@ ignore = [
     "D107", # pydocstyle - missing docstring in __init__
     "D202", # pydocstyle - no blank lines allowed after function docstring
     "D205", # pydocstyle - 1 blank line required between summary line and description
+    "D203", # pydocstyle - incompatible with D211
     "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
-    "E501", # pycodestyle line too long, handled by black
     "N818", # pep8-naming - exception name should be named with an Error suffix
     "S311", # flake8-bandit - Standard pseudo-random generators are not suitable for security/cryptographic purposes
     "S101", # asserts
     "D213", # multiline summary
-    "D417"
+    "D417",
 ]
-
-line-length = 120
-target-version = "py38"
