@@ -32,7 +32,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version:
+          ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.14t"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,7 +54,7 @@ jobs:
       - name: Install library
         run: uv run maturin develop
       - name: Test
-        run: uv run pytest
+        run: uv run pytest --parallel-threads=10
   rust_tests:
     name: "Rust Tests"
     runs-on: ubuntu-latest
