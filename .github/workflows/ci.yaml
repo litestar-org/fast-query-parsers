@@ -61,23 +61,5 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          target: x86_64-unknown-linux-musl
-          components: llvm-tools-preview
-      - name: Download grcov
-        run: |
-          mkdir -p "${HOME}/.local/bin"
-          curl -sL https://github.com/mozilla/grcov/releases/download/v0.8.10/grcov-x86_64-unknown-linux-gnu.tar.bz2 | tar jxf - -C "${HOME}/.local/bin"
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Test with Coverage
-        run: CARGO_INCREMENTAL=0 RUSTFLAGS='-Cinstrument-coverage' LLVM_PROFILE_FILE='cargo-test-%p-%m.profraw' cargo test
-      - name: Generate Coverage Report
-        run: mkdir coverage && grcov . --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o coverage.lcov
-      - uses: actions/upload-artifact@v4.6.2
-        with:
-          name: coverage-lcov
-          path: coverage.lcov
+        run: cargo test
