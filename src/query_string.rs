@@ -3,7 +3,7 @@ use std::convert::Infallible;
 use lazy_static::lazy_static;
 use regex::Regex;
 use rustc_hash::FxHashMap;
-use serde_json::{from_str, Value};
+use serde_json::{Value, from_str};
 use urlencoding::decode;
 
 lazy_static! {
@@ -93,7 +93,7 @@ pub fn parse_query_string_to_json(bs: &[u8], parse_numbers: bool) -> Value {
 
 #[cfg(test)]
 mod tests {
-    use serde_json::{json, to_string, Value};
+    use serde_json::{Value, json, to_string};
 
     use super::*;
 
