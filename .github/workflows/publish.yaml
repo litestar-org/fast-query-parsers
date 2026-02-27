@@ -51,7 +51,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v6.0.0
         with:
-          name: wheels
+          name: wheels-macos
           path: dist
 
   windows:
@@ -85,7 +85,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v6.0.0
         with:
-          name: wheels
+          name: wheels-windows-${{ matrix.target }}
           path: dist
 
   linux:
@@ -114,7 +114,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v6.0.0
         with:
-          name: wheels
+          name: wheels-linux-${{ matrix.target }}
           path: dist
 
   linux-cross:
@@ -151,7 +151,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v6.0.0
         with:
-          name: wheels
+          name: wheels-linux-cross-${{ matrix.target }}
           path: dist
 
   musllinux:
@@ -187,7 +187,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v6.0.0
         with:
-          name: wheels
+          name: wheels-musllinux-${{ matrix.target }}
           path: dist
 
   musllinux-cross:
@@ -225,8 +225,9 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v6.0.0
         with:
-          name: wheels
+          name: wheels-musllinux-cross-${{ matrix.platform.target }}
           path: dist
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
@@ -240,7 +241,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v7
         with:
-          name: wheels
+          pattern: wheels-*
+          merge-multiple: true
       - uses: actions/setup-python@v6
       - name: Publish to PyPi
         env:
