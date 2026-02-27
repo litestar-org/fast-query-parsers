@@ -49,7 +49,7 @@ jobs:
           pip install pytest
           pytest -v
       - name: Upload wheels
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: wheels-macos
           path: dist
@@ -83,7 +83,7 @@ jobs:
           pip install pytest
           python -m pytest -v
       - name: Upload wheels
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: wheels-windows-${{ matrix.target }}
           path: dist
@@ -112,7 +112,7 @@ jobs:
           pip install pytest
           pytest -v
       - name: Upload wheels
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: wheels-linux-${{ matrix.target }}
           path: dist
@@ -149,7 +149,7 @@ jobs:
             pip install pytest
             pytest -v
       - name: Upload wheels
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: wheels-linux-cross-${{ matrix.target }}
           path: dist
@@ -185,7 +185,7 @@ jobs:
             pip3 install ${{ env.PACKAGE_NAME }} --no-index --find-links /io/dist/ --force-reinstall
             python3 -m pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: wheels-musllinux-${{ matrix.target }}
           path: dist
@@ -223,7 +223,7 @@ jobs:
             pip3 install ${{ env.PACKAGE_NAME }} --no-index --find-links dist/ --force-reinstall
             python3 -m pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: wheels-musllinux-cross-${{ matrix.platform.target }}
           path: dist
