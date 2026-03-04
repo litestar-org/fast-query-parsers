@@ -12,8 +12,8 @@ lazy_static! {
 
 #[inline]
 pub fn parse_query_string(qs: &[u8], separator: char) -> Vec<(String, String)> {
-    String::from_utf8(qs.to_vec())
-        .unwrap_or_default()
+    String::from_utf8_lossy(qs)
+        .into_owned()
         .replace('+', " ")
         .split(separator)
         .filter_map(|value| {
@@ -269,6 +269,18 @@ mod tests {
             parse_query_string_to_json(b"a=1&a=2&a=3", true),
             json!({ "a": [1,2,3] })
         );
+    }
+
+    #[test]
+    fn test_invalid_utf8_bytes_parsed_lossy() {
+        // Binary data (e.g. BitTorrent info_hash) - non-UTF-8 percent-encoded bytes
+        // should not cause the entire query string to collapse into a single broken key.
+        let qs = b"info_hash=%0dA%f0%1d&peer_id=test&port=6881";
+        let result = parse_query_string(qs, '&');
+        // Should have 3 key-value pairs, not collapse to 1
+        assert_eq!(result.len(), 3, "Expected 3 pairs, got: {:?}", result);
+        assert_eq!(result[1], (String::from("peer_id"), String::from("test")));
+        assert_eq!(result[2], (String::from("port"), String::from("6881")));
     }
 
     #[test]
