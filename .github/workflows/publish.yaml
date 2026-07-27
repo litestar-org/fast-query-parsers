@@ -239,7 +239,7 @@ jobs:
       - musllinux
       - musllinux-cross
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           pattern: wheels-*
           merge-multiple: true
